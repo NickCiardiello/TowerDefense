@@ -26,6 +26,7 @@ pathElement.setAttributeNS(null, 'd', backwardsCPath);
 drawPath();
 
 let cash = 200;
+let health = 50;
 
 function switchPath() {
     if (curPath === sPath) {
@@ -139,6 +140,14 @@ function startRound() {
         let y = parseInt(pathElement.getPointAtLength(enemies[i].step).y);
         enemies[i].update(x, y);
         enemies[i].move();
+        if (enemies[i].step >= pathElement.getTotalLength()) {
+            health -= enemies[i].damage;
+            enemies.splice(i, 1);
+            document.getElementById('healthLbl').innerHTML = "Health: " + health;
+            if (health <= 0) {
+                alert('Game Over');
+            }
+        }
     }
 
     for (let i = enemies.length - 1; i >= 0; i--) {

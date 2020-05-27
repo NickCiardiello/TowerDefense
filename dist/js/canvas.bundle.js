@@ -164,6 +164,7 @@ var pathElement = document.createElementNS('http://www.w3.org/2000/svg', "path")
 pathElement.setAttributeNS(null, 'd', backwardsCPath);
 drawPath();
 var cash = 200;
+var health = 50;
 
 function switchPath() {
   if (curPath === sPath) {
@@ -196,17 +197,8 @@ function clear() {
 }
 
 function checkIfAble() {
-  if (cash < 100) {
-    document.getElementById('placeBasicTowerBtn').disabled = true;
-  } else {
-    document.getElementById('placeBasicTowerBtn').disabled = false;
-  }
-
-  if (cash < 150) {
-    document.getElementById('placeSniperTowerBtn').disabled = true;
-  } else {
-    document.getElementById('placeSniperTowerBtn').disabled = false;
-  }
+  document.getElementById('placeBasicTowerBtn').disabled = cash < 100;
+  document.getElementById('placeSniperTowerBtn').disabled = cash < 150;
 }
 
 function drawPath() {
@@ -291,6 +283,16 @@ function startRound() {
     var y = parseInt(pathElement.getPointAtLength(enemies[i].step).y);
     enemies[i].update(x, y);
     enemies[i].move();
+
+    if (enemies[i].step >= pathElement.getTotalLength()) {
+      health -= enemies[i].damage;
+      enemies.splice(i, 1);
+      document.getElementById('healthLbl').innerHTML = "Health: " + health;
+
+      if (health <= 0) {
+        alert('Game Over');
+      }
+    }
   }
 
   for (var _i2 = enemies.length - 1; _i2 >= 0; _i2--) {
@@ -355,6 +357,7 @@ var Circle = /*#__PURE__*/function () {
     this.x = 0;
     this.y = 0;
     this.alive = true;
+    this.damage = 10;
 
     switch (color) {
       case "blue":
@@ -394,8 +397,8 @@ var Circle = /*#__PURE__*/function () {
     }
   }, {
     key: "hit",
-    value: function hit(damage) {
-      this.radius -= damage;
+    value: function hit(damageTaken) {
+      this.radius -= damageTaken;
 
       if (this.radius <= 0) {
         this.alive = false;
@@ -435,6 +438,7 @@ var Square = /*#__PURE__*/function () {
     this.x = 0;
     this.y = 0;
     this.alive = true;
+    this.damage = 15;
 
     switch (color) {
       case "red":
@@ -477,9 +481,9 @@ var Square = /*#__PURE__*/function () {
     }
   }, {
     key: "hit",
-    value: function hit(damage) {
-      this.height -= damage;
-      this.width -= damage;
+    value: function hit(damageTaken) {
+      this.height -= damageTaken;
+      this.width -= damageTaken;
 
       if (this.height <= 0 || this.width <= 0) {
         this.alive = false;

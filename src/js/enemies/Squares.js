@@ -5,6 +5,7 @@ export default class Square {
         this.x = 0;
         this.y = 0;
         this.alive = true;
+        this.damage = 15;
         switch (color) {
             case "red":
                 this.speed = 3;
@@ -40,9 +41,9 @@ export default class Square {
         this.step += this.speed;
     }
 
-    hit(damage) {
-        this.height -= damage;
-        this.width -= damage;
+    hit(damageTaken) {
+        this.height -= damageTaken;
+        this.width -= damageTaken;
         if (this.height <= 0 || this.width <= 0) {
             this.alive = false;
         }

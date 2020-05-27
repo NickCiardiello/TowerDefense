@@ -5,6 +5,7 @@ export default class Circle {
         this.x = 0;
         this.y = 0;
         this.alive = true;
+        this.damage = 10;
         switch (color) {
             case "blue":
                 this.radius = 50;
@@ -37,8 +38,8 @@ export default class Circle {
         this.step += this.speed;
     }
 
-    hit(damage) {
-        this.radius -= damage;
+    hit(damageTaken) {
+        this.radius -= damageTaken
         if (this.radius <= 0) {
             this.alive = false;
         }
