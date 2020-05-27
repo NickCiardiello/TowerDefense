@@ -1,10 +1,10 @@
+import { getDistance } from './utils';
+import BasicTower from './towers/BasicTower.js';
 
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 canvas.width = 800;
 canvas.height = 800;
-
-import BasicTower from './towers/BasicTower.js';
 
 const mouse = {
     x: 0,
@@ -63,22 +63,6 @@ function drawPath() {
     context.closePath();
 }
 
-function Tower(x, y, radius, rangeRadius, color) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.rangeRadius = rangeRadius;
-    this.color = color;
-}
-
-// function BasicTower(x, y) {
-//     this.x = x;
-//     this.y = y;
-//     this.radius = 25;
-//     this.rangeRadius = 125;
-//     this.color = '#964b00';
-// }
-
 function SniperTower(x, y) {
     this.x = x;
     this.y = y;
@@ -101,17 +85,15 @@ canvas.addEventListener('click', function() {
 }, false);
 
 let tempRangeRadius = 0;
-let basicTower;
+let towerToPlace;
 function placeBasicTower() {
-    console.log("placing basic tower");
     placed = false;
-    tempRangeRadius = 125
-    basicTower = new BasicTower(context, mouse.x - 800, mouse.y);
+    // tempRangeRadius = 125
+    towerToPlace = new BasicTower(context, mouse.x - 800, mouse.y);
     place();
 }
 
 function placeSniperTower() {
-    console.log("placing sniper tower");
     placed = false;
     tempRangeRadius = 100000;
     place();
@@ -122,13 +104,11 @@ function place() {
         requestAnimationFrame(place);
     }
     clear();
-    basicTower.x = mouse.x - 800;
-    basicTower.y = mouse.y;
-    basicTower.draw();
+    towerToPlace.update(mouse.x - 800, mouse.y);
     drawTowers();
     drawPath();
     if (placed) {
-        towers[towers.length] = basicTower;
+        towers[towers.length] = towerToPlace;
         drawTowers();
         drawPath();
     }
@@ -172,7 +152,7 @@ function startRound() {
 
     for (let i = circles.length - 1; i >= 0; i--) {
         for (let j = 0; j < towers.length; j++) {
-            if (circles[i].radius > 0 && getDistance(circles[i].x, towers[j].x, circles[i].y, towers[j].y) < towers[j].rangeRadius) {
+            if (circles[i].radius > 0 && getDistance(circles[i].x, circles[i].y, towers[j].x, towers[j].y) < towers[j].rangeRadius) {
                 context.beginPath();
                 context.moveTo(towers[j].x, towers[j].y);
                 context.lineTo(circles[i].x, circles[i].y);
@@ -204,10 +184,4 @@ function move(x, y, radius, color) {
     context.fillStyle = color
     context.fill();
     context.closePath();
-}
-
-function getDistance(x1, x2, y1, y2) {
-    let a = x1 - x2;
-    let b = y1 - y2;
-    return Math.sqrt( a * a + b * b );
 }
