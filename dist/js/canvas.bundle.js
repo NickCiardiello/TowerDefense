@@ -97,8 +97,10 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/js/utils.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _towers_BasicTower_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./towers/BasicTower.js */ "./src/js/towers/BasicTower.js");
-/* harmony import */ var _towers_SniperTower__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./towers/SniperTower */ "./src/js/towers/SniperTower.js");
+/* harmony import */ var _towers_Tower__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./towers/Tower */ "./src/js/towers/Tower.js");
+/* harmony import */ var _towers_BasicTower__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./towers/BasicTower */ "./src/js/towers/BasicTower.js");
+/* harmony import */ var _towers_SniperTower__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./towers/SniperTower */ "./src/js/towers/SniperTower.js");
+
 
 
 
@@ -149,8 +151,12 @@ function Circle(radius, speed, color, step) {
 
 document.getElementById("playBtn").addEventListener("click", run, false);
 document.getElementById("pathBtn").addEventListener("click", switchPath, false);
-document.getElementById("placeBasicTowerBtn").addEventListener("click", placeBasicTower, false);
-document.getElementById("placeSniperTowerBtn").addEventListener("click", placeSniperTower, false);
+document.getElementById("placeBasicTowerBtn").addEventListener("click", function () {
+  placeTower('BasicTower');
+}, false);
+document.getElementById("placeSniperTowerBtn").addEventListener("click", function () {
+  placeTower('SniperTower');
+}, false);
 
 function clear() {
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -162,14 +168,7 @@ function drawPath() {
   context.lineWidth = 1;
   context.stroke(path2D);
   context.closePath();
-} // function SniperTower(x, y) {
-//     this.x = x;
-//     this.y = y;
-//     this.radius = 10;
-//     this.rangeRadius = 10000;
-//     this.color = '#00ff00';
-// }
-
+}
 
 var towers = [];
 
@@ -194,15 +193,21 @@ canvas.addEventListener('click', function () {
   placed = true;
 }, false);
 
+function placeTower(towerType) {
+  placed = false;
+  towers[towers.length] = new _towers_Tower__WEBPACK_IMPORTED_MODULE_1__["default"](context, towerType, mouse.x, mouse.y);
+  place();
+}
+
 function placeBasicTower() {
   placed = false;
-  towers[towers.length] = new _towers_BasicTower_js__WEBPACK_IMPORTED_MODULE_1__["default"](context, mouse.x, mouse.y);
+  towers[towers.length] = new _towers_BasicTower__WEBPACK_IMPORTED_MODULE_2__["default"](context, mouse.x, mouse.y);
   place();
 }
 
 function placeSniperTower() {
   placed = false;
-  towers[towers.length] = new _towers_SniperTower__WEBPACK_IMPORTED_MODULE_2__["default"](context, mouse.x, mouse.y);
+  towers[towers.length] = new _towers_SniperTower__WEBPACK_IMPORTED_MODULE_3__["default"](context, mouse.x, mouse.y);
   place();
 }
 
@@ -420,6 +425,84 @@ var SniperTower = /*#__PURE__*/function () {
   }]);
 
   return SniperTower;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/js/towers/Tower.js":
+/*!********************************!*\
+  !*** ./src/js/towers/Tower.js ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tower; });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./src/js/utils.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils_js__WEBPACK_IMPORTED_MODULE_0__);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var Tower = /*#__PURE__*/function () {
+  function Tower(context, towerType, x, y) {
+    _classCallCheck(this, Tower);
+
+    this.context = context;
+    this.x = x;
+    this.y = y;
+
+    switch (towerType) {
+      case "BasicTower":
+        this.radius = 25;
+        this.rangeRadius = 125;
+        this.color = '#964b00';
+        break;
+
+      case "SniperTower":
+        this.radius = 10;
+        this.rangeRadius = 500;
+        this.color = '#00ff00';
+        break;
+
+      default:
+        this.radius = 0;
+        this.rangeRadius = 0;
+        this.color = '#000';
+    }
+  }
+
+  _createClass(Tower, [{
+    key: "drawTower",
+    value: function drawTower() {
+      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["drawTower"])(this);
+    }
+  }, {
+    key: "drawTowerFull",
+    value: function drawTowerFull() {
+      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["drawTowerFull"])(this);
+    }
+  }, {
+    key: "drawTowerRange",
+    value: function drawTowerRange() {
+      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["drawTowerRange"])(this);
+    }
+  }, {
+    key: "update",
+    value: function update(x, y) {
+      this.x = x;
+      this.y = y;
+    }
+  }]);
+
+  return Tower;
 }();
 
 

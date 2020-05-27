@@ -1,5 +1,6 @@
 import { getDistance } from './utils';
-import BasicTower from './towers/BasicTower.js';
+import Tower from './towers/Tower';
+import BasicTower from './towers/BasicTower';
 import SniperTower from "./towers/SniperTower";
 
 const canvas = document.querySelector('canvas');
@@ -50,8 +51,8 @@ function Circle(radius, speed, color, step) {
 
 document.getElementById ("playBtn").addEventListener ("click", run, false);
 document.getElementById ("pathBtn").addEventListener ("click", switchPath, false);
-document.getElementById ("placeBasicTowerBtn").addEventListener ("click", placeBasicTower, false);
-document.getElementById ("placeSniperTowerBtn").addEventListener ("click", placeSniperTower, false);
+document.getElementById ("placeBasicTowerBtn").addEventListener ("click", function() { placeTower('BasicTower') }, false);
+document.getElementById ("placeSniperTowerBtn").addEventListener ("click", function() { placeTower('SniperTower') }, false);
 
 function clear() {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -64,14 +65,6 @@ function drawPath() {
     context.stroke(path2D);
     context.closePath();
 }
-
-// function SniperTower(x, y) {
-//     this.x = x;
-//     this.y = y;
-//     this.radius = 10;
-//     this.rangeRadius = 10000;
-//     this.color = '#00ff00';
-// }
 
 let towers = [];
 function drawTowers() {
@@ -95,15 +88,9 @@ canvas.addEventListener('click', function() {
     placed = true;
 }, false);
 
-function placeBasicTower() {
+function placeTower(towerType) {
     placed = false;
-    towers[towers.length] = new BasicTower(context, mouse.x, mouse.y);
-    place();
-}
-
-function placeSniperTower() {
-    placed = false;
-    towers[towers.length] = new SniperTower(context, mouse.x, mouse.y);
+    towers[towers.length] = new Tower(context, towerType, mouse.x, mouse.y);
     place();
 }
 
