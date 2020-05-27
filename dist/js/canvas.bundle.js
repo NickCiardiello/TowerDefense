@@ -188,44 +188,37 @@ function drawTowersFull() {
   }
 }
 
-var placed = false;
+var placing = false;
 canvas.addEventListener('click', function () {
-  placed = true;
+  placing = false;
+}, false);
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape' && placing) {
+    placing = false;
+    towers.pop();
+    drawTowers();
+    drawPath();
+  }
 }, false);
 
 function placeTower(towerType) {
-  placed = false;
+  placing = true;
   towers[towers.length] = new _towers_Tower__WEBPACK_IMPORTED_MODULE_1__["default"](context, towerType, mouse.x, mouse.y);
   place();
 }
 
-function placeBasicTower() {
-  placed = false;
-  towers[towers.length] = new _towers_BasicTower__WEBPACK_IMPORTED_MODULE_2__["default"](context, mouse.x, mouse.y);
-  place();
-}
-
-function placeSniperTower() {
-  placed = false;
-  towers[towers.length] = new _towers_SniperTower__WEBPACK_IMPORTED_MODULE_3__["default"](context, mouse.x, mouse.y);
-  place();
-}
-
 function place() {
-  if (!placed) {
-    requestAnimationFrame(place);
-  }
-
   clear();
-  towers[towers.length - 1].update(mouse.x, mouse.y);
-  drawTowersFull();
-  drawPath();
 
-  if (placed) {
-    clear();
+  if (placing) {
+    requestAnimationFrame(place);
+    towers[towers.length - 1].update(mouse.x, mouse.y);
+    drawTowersFull();
+  } else {
     drawTowers();
-    drawPath();
   }
+
+  drawPath();
 }
 
 var round = 1;
