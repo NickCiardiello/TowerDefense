@@ -6,13 +6,14 @@ const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 canvas.width = 800;
 canvas.height = 800;
+let rect = canvas.getBoundingClientRect();
 
 const mouse = {
     x: 0,
     y: 0
 }
 addEventListener('mousemove', (event) => {
-    mouse.x = event.clientX
+    mouse.x = event.clientX - rect.left;
     mouse.y = event.clientY
 })
 
@@ -96,13 +97,13 @@ canvas.addEventListener('click', function() {
 
 function placeBasicTower() {
     placed = false;
-    towers[towers.length] = new BasicTower(context, mouse.x - 800, mouse.y);
+    towers[towers.length] = new BasicTower(context, mouse.x, mouse.y);
     place();
 }
 
 function placeSniperTower() {
     placed = false;
-    towers[towers.length] = new SniperTower(context, mouse.x - 800, mouse.y);
+    towers[towers.length] = new SniperTower(context, mouse.x, mouse.y);
     place();
 }
 
@@ -111,12 +112,11 @@ function place() {
         requestAnimationFrame(place);
     }
     clear();
-    towers[towers.length - 1].update(mouse.x - 800, mouse.y);
+    towers[towers.length - 1].update(mouse.x, mouse.y);
     drawTowersFull();
     drawPath();
     if (placed) {
         clear();
-        console.log('num towers: ' + towers.length);
         drawTowers();
         drawPath();
     }
