@@ -44,9 +44,10 @@ function Circle(radius, speed, color, step) {
     let y;
 }
 
-document.getElementById ("playbtn").addEventListener ("click", run, false);
-document.getElementById ("placebtn").addEventListener ("click", placeTower, false);
-document.getElementById ("pathbtn").addEventListener ("click", switchPath, false);
+document.getElementById ("playBtn").addEventListener ("click", run, false);
+document.getElementById ("pathBtn").addEventListener ("click", switchPath, false);
+document.getElementById ("placeBasicTowerBtn").addEventListener ("click", placeBasicTower, false);
+document.getElementById ("placeSniperTowerBtn").addEventListener ("click", placeSniperTower, false);
 
 function clear() {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -66,6 +67,22 @@ function Tower(x, y, radius, rangeRadius, color) {
     this.radius = radius;
     this.rangeRadius = rangeRadius;
     this.color = color;
+}
+
+function BasicTower(x, y) {
+    this.x = x;
+    this.y = y;
+    this.radius = 25;
+    this.rangeRadius = 125;
+    this.color = '#964b00';
+}
+
+function SniperTower(x, y) {
+    this.x = x;
+    this.y = y;
+    this.radius = 10;
+    this.rangeRadius = 10000;
+    this.color = '#00ff00';
 }
 
 let towers = [];
@@ -90,8 +107,18 @@ canvas.addEventListener('click', function() {
     placed = true;
 }, false);
 
-function placeTower() {
+let tempRangeRadius = 0;
+function placeBasicTower() {
+    console.log("placing basic tower");
     placed = false;
+    tempRangeRadius = 125
+    place();
+}
+
+function placeSniperTower() {
+    console.log("placing sniper tower");
+    placed = false;
+    tempRangeRadius = 100000;
     place();
 }
 
@@ -102,13 +129,13 @@ function place() {
     clear();
     context.beginPath();
     context.fillStyle = '#d3d3d3';
-    context.arc(mouse.x - 800, mouse.y, 125, 0, Math.PI * 2, false);
+    context.arc(mouse.x - 800, mouse.y, tempRangeRadius, 0, Math.PI * 2, false);
     context.fill();
     context.closePath();
     drawTowers();
     drawPath();
     if (placed) {
-        towers[towers.length] = new Tower(mouse.x - 800, mouse.y, 25, 125, '#964b00');
+        towers[towers.length] = new BasicTower(mouse.x - 800, mouse.y);
         drawTowers();
         drawPath();
     }
@@ -171,7 +198,7 @@ function startRound() {
     }
     if (!running) {
         round++;
-        document.getElementById('playbtn').innerHTML = "Play Round " + round;
+        document.getElementById('playBtn').innerHTML = "Play Round " + round;
     } else {
         requestAnimationFrame(startRound)
     }
