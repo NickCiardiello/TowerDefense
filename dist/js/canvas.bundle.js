@@ -90,13 +90,17 @@
 /*!**************************!*\
   !*** ./src/js/canvas.js ***!
   \**************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _towers_BasicTower_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./towers/BasicTower.js */ "./src/js/towers/BasicTower.js");
 var canvas = document.querySelector('canvas');
 var context = canvas.getContext('2d');
 canvas.width = 800;
 canvas.height = 800;
+
 var mouse = {
   x: 0,
   y: 0
@@ -160,15 +164,14 @@ function Tower(x, y, radius, rangeRadius, color) {
   this.radius = radius;
   this.rangeRadius = rangeRadius;
   this.color = color;
-}
+} // function BasicTower(x, y) {
+//     this.x = x;
+//     this.y = y;
+//     this.radius = 25;
+//     this.rangeRadius = 125;
+//     this.color = '#964b00';
+// }
 
-function BasicTower(x, y) {
-  this.x = x;
-  this.y = y;
-  this.radius = 25;
-  this.rangeRadius = 125;
-  this.color = '#964b00';
-}
 
 function SniperTower(x, y) {
   this.x = x;
@@ -178,20 +181,24 @@ function SniperTower(x, y) {
   this.color = '#00ff00';
 }
 
+function tempDrawBasicTower(x, y) {
+  context.beginPath();
+  context.arc(x, y, 125, 0, Math.PI * 2, false);
+  context.fillStyle = '#d3d3d3';
+  context.fill();
+  context.closePath();
+  context.beginPath();
+  context.arc(x, y, 25, 0, Math.PI * 2, false);
+  context.fillStyle = '#964b00';
+  context.fill();
+  context.closePath();
+}
+
 var towers = [];
 
 function drawTowers() {
   for (var i = 0; i < towers.length; i++) {
-    context.beginPath();
-    context.fillStyle = '#d3d3d3';
-    context.arc(towers[i].x, towers[i].y, towers[i].rangeRadius, 0, Math.PI * 2, false);
-    context.fill();
-    context.closePath();
-    context.beginPath();
-    context.fillStyle = towers[i].color;
-    context.arc(towers[i].x, towers[i].y, towers[i].radius, 0, Math.PI * 2, false);
-    context.fill();
-    context.closePath();
+    towers[i].draw();
   }
 }
 
@@ -200,11 +207,13 @@ canvas.addEventListener('click', function () {
   placed = true;
 }, false);
 var tempRangeRadius = 0;
+var basicTower;
 
 function placeBasicTower() {
   console.log("placing basic tower");
   placed = false;
   tempRangeRadius = 125;
+  basicTower = new _towers_BasicTower_js__WEBPACK_IMPORTED_MODULE_0__["default"](context, mouse.x - 800, mouse.y);
   place();
 }
 
@@ -220,18 +229,23 @@ function place() {
     requestAnimationFrame(place);
   }
 
-  clear();
-  context.beginPath();
-  context.fillStyle = '#d3d3d3';
-  context.arc(mouse.x - 800, mouse.y, tempRangeRadius, 0, Math.PI * 2, false);
-  context.fill();
-  context.closePath();
+  clear(); // context.beginPath();
+  // context.fillStyle = '#d3d3d3';
+  // context.arc(mouse.x - 800, mouse.y, tempRangeRadius, 0, Math.PI * 2, false);
+  // context.fill();
+  // context.closePath();
+  // tempDrawBasicTower(mouse.x - 800, mouse.y);
+  // let basicTower = new BasicTower(context, mouse.x - 800, mouse.y);
+
+  basicTower.x = mouse.x - 800;
+  basicTower.y = mouse.y;
+  basicTower.draw();
   drawTowers();
   drawPath();
 
   if (placed) {
-    // towers[towers.length] = new Tower(mouse.x - 800, mouse.y, 25, 125, '#964b00');
-    towers[towers.length] = new BasicTower(mouse.x - 800, mouse.y);
+    // towers[towers.length] = new BasicTower(context, mouse.x - 800, mouse.y);
+    towers[towers.length] = basicTower;
     drawTowers();
     drawPath();
   }
@@ -320,6 +334,62 @@ function getDistance(x1, x2, y1, y2) {
   var b = y1 - y2;
   return Math.sqrt(a * a + b * b);
 }
+
+/***/ }),
+
+/***/ "./src/js/towers/BasicTower.js":
+/*!*************************************!*\
+  !*** ./src/js/towers/BasicTower.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BasicTower; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var BasicTower = /*#__PURE__*/function () {
+  function BasicTower(context, x, y) {
+    _classCallCheck(this, BasicTower);
+
+    this.context = context;
+    this.x = x;
+    this.y = y;
+    this.radius = 25;
+    this.rangeRadius = 125;
+    this.color = '#964b00';
+  }
+
+  _createClass(BasicTower, [{
+    key: "draw",
+    value: function draw() {
+      this.context.beginPath();
+      this.context.arc(this.x, this.y, this.rangeRadius, 0, Math.PI * 2, false);
+      this.context.fillStyle = '#d3d3d3';
+      this.context.fill();
+      this.context.closePath();
+      this.context.beginPath();
+      this.context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+      this.context.fillStyle = this.color;
+      this.context.fill();
+      this.context.closePath();
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      this.draw();
+    }
+  }]);
+
+  return BasicTower;
+}();
+
+
 
 /***/ })
 

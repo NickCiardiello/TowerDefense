@@ -4,6 +4,8 @@ const context = canvas.getContext('2d');
 canvas.width = 800;
 canvas.height = 800;
 
+import BasicTower from './towers/BasicTower.js';
+
 const mouse = {
     x: 0,
     y: 0
@@ -69,13 +71,13 @@ function Tower(x, y, radius, rangeRadius, color) {
     this.color = color;
 }
 
-function BasicTower(x, y) {
-    this.x = x;
-    this.y = y;
-    this.radius = 25;
-    this.rangeRadius = 125;
-    this.color = '#964b00';
-}
+// function BasicTower(x, y) {
+//     this.x = x;
+//     this.y = y;
+//     this.radius = 25;
+//     this.rangeRadius = 125;
+//     this.color = '#964b00';
+// }
 
 function SniperTower(x, y) {
     this.x = x;
@@ -88,16 +90,7 @@ function SniperTower(x, y) {
 let towers = [];
 function drawTowers() {
     for (let i = 0; i < towers.length; i++) {
-        context.beginPath();
-        context.fillStyle = '#d3d3d3';
-        context.arc(towers[i].x, towers[i].y, towers[i].rangeRadius, 0, Math.PI * 2, false);
-        context.fill();
-        context.closePath();
-        context.beginPath();
-        context.fillStyle = towers[i].color;
-        context.arc(towers[i].x, towers[i].y, towers[i].radius, 0, Math.PI * 2, false);
-        context.fill();
-        context.closePath();
+        towers[i].draw();
     }
 }
 
@@ -108,10 +101,12 @@ canvas.addEventListener('click', function() {
 }, false);
 
 let tempRangeRadius = 0;
+let basicTower;
 function placeBasicTower() {
     console.log("placing basic tower");
     placed = false;
     tempRangeRadius = 125
+    basicTower = new BasicTower(context, mouse.x - 800, mouse.y);
     place();
 }
 
@@ -127,15 +122,13 @@ function place() {
         requestAnimationFrame(place);
     }
     clear();
-    context.beginPath();
-    context.fillStyle = '#d3d3d3';
-    context.arc(mouse.x - 800, mouse.y, tempRangeRadius, 0, Math.PI * 2, false);
-    context.fill();
-    context.closePath();
+    basicTower.x = mouse.x - 800;
+    basicTower.y = mouse.y;
+    basicTower.draw();
     drawTowers();
     drawPath();
     if (placed) {
-        towers[towers.length] = new BasicTower(mouse.x - 800, mouse.y);
+        towers[towers.length] = basicTower;
         drawTowers();
         drawPath();
     }
