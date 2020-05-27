@@ -1,5 +1,6 @@
 import { getDistance } from './utils';
 import BasicTower from './towers/BasicTower.js';
+import SniperTower from "./towers/SniperTower";
 
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
@@ -63,18 +64,27 @@ function drawPath() {
     context.closePath();
 }
 
-function SniperTower(x, y) {
-    this.x = x;
-    this.y = y;
-    this.radius = 10;
-    this.rangeRadius = 10000;
-    this.color = '#00ff00';
-}
+// function SniperTower(x, y) {
+//     this.x = x;
+//     this.y = y;
+//     this.radius = 10;
+//     this.rangeRadius = 10000;
+//     this.color = '#00ff00';
+// }
 
 let towers = [];
 function drawTowers() {
     for (let i = 0; i < towers.length; i++) {
-        towers[i].draw();
+        towers[i].drawTower();
+    }
+}
+
+function drawTowersFull() {
+    for (let i = 0; i < towers.length; i++) {
+        towers[i].drawTowerRange();
+    }
+    for (let i = 0; i < towers.length; i++) {
+        towers[i].drawTower();
     }
 }
 
@@ -84,18 +94,15 @@ canvas.addEventListener('click', function() {
     placed = true;
 }, false);
 
-let tempRangeRadius = 0;
-let towerToPlace;
 function placeBasicTower() {
     placed = false;
-    // tempRangeRadius = 125
-    towerToPlace = new BasicTower(context, mouse.x - 800, mouse.y);
+    towers[towers.length] = new BasicTower(context, mouse.x - 800, mouse.y);
     place();
 }
 
 function placeSniperTower() {
     placed = false;
-    tempRangeRadius = 100000;
+    towers[towers.length] = new SniperTower(context, mouse.x - 800, mouse.y);
     place();
 }
 
@@ -104,11 +111,12 @@ function place() {
         requestAnimationFrame(place);
     }
     clear();
-    towerToPlace.update(mouse.x - 800, mouse.y);
-    drawTowers();
+    towers[towers.length - 1].update(mouse.x - 800, mouse.y);
+    drawTowersFull();
     drawPath();
     if (placed) {
-        towers[towers.length] = towerToPlace;
+        clear();
+        console.log('num towers: ' + towers.length);
         drawTowers();
         drawPath();
     }
@@ -176,7 +184,6 @@ function startRound() {
         requestAnimationFrame(startRound)
     }
 }
-// run();
 
 function move(x, y, radius, color) {
     context.beginPath();

@@ -1,4 +1,4 @@
-import { drawTowerWithRange } from '../utils.js';
+import { drawTower, drawTowerRange, drawTowerFull } from '../utils.js';
 export default class BasicTower {
   constructor(context, x, y) {
     this.context = context;
@@ -9,16 +9,22 @@ export default class BasicTower {
     this.color = '#964b00';
   }
 
-  draw() {
-    drawTowerWithRange(this);
+  drawTower() {
+    drawTower(this);
+  }
+
+  drawTowerFull() {
+    drawTowerFull(this);
+  }
+
+  drawTowerRange() {
+    drawTowerRange(this);
   }
 
   update(x, y) {
     this.x = x;
     this.y = y;
-    this.draw();
   }
-
 }
 
 

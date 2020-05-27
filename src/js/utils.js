@@ -13,18 +13,28 @@ function getDistance(x1, y1, x2, y2) {
     return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2))
 }
 
-function drawTowerWithRange(tower) {
-    tower.context.beginPath()
-    tower.context.arc(tower.x, tower.y, tower.rangeRadius, 0, Math.PI * 2, false)
-    tower.context.fillStyle = '#d3d3d3';
-    tower.context.fill()
-    tower.context.closePath()
+function drawTower(tower) {
     tower.context.beginPath()
     tower.context.arc(tower.x, tower.y, tower.radius, 0, Math.PI * 2, false)
     tower.context.fillStyle = tower.color;
     tower.context.fill()
     tower.context.closePath()
+
 }
 
-module.exports = { randomIntFromRange, randomColor, getDistance, drawTowerWithRange }
+function drawTowerRange(tower) {
+    tower.context.beginPath()
+    tower.context.arc(tower.x, tower.y, tower.rangeRadius, 0, Math.PI * 2, false)
+    tower.context.fillStyle = '#d3d3d3';
+    tower.context.fill()
+    tower.context.closePath()
+}
+
+function drawTowerFull(tower) {
+    drawTowerRange(tower);
+    drawTower(tower);
+}
+
+
+module.exports = { randomIntFromRange, randomColor, getDistance, drawTower, drawTowerRange, drawTowerFull }
 
