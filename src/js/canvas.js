@@ -1,7 +1,6 @@
-import { getDistance } from './utils';
 import Tower from './towers/Tower';
-import BasicTower from './towers/BasicTower';
-import SniperTower from "./towers/SniperTower";
+import { getDistance } from './utils';
+import createEnemiesForRound from "./Rounds";
 
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
@@ -26,6 +25,8 @@ let pathElement = document.createElementNS('http://www.w3.org/2000/svg',"path");
 pathElement.setAttributeNS(null, 'd', backwardsCPath);
 drawPath();
 
+let cash = 200;
+
 function switchPath() {
     if (curPath === sPath) {
         curPath = backwardsCPath;
@@ -40,22 +41,22 @@ function switchPath() {
     drawPath();
 }
 
-function Circle(radius, speed, color, step) {
-    this.radius = radius;
-    this.speed = speed;
-    this.color = color;
-    this.step = 0;
-    let x;
-    let y;
-}
-
 document.getElementById ("playBtn").addEventListener ("click", run, false);
 document.getElementById ("pathBtn").addEventListener ("click", switchPath, false);
-document.getElementById ("placeBasicTowerBtn").addEventListener ("click", function() { placeTower('BasicTower') }, false);
-document.getElementById ("placeSniperTowerBtn").addEventListener ("click", function() { placeTower('SniperTower') }, false);
+document.getElementById ("placeBasicTowerBtn").addEventListener ("click",
+    function() { placeTower('BasicTower') }, false);
+document.getElementById ("placeSniperTowerBtn").addEventListener ("click",
+    function() { placeTower('SniperTower') }, false);
+document.getElementById('cashLbl').innerText = "$" + cash;
+checkIfAble();
 
 function clear() {
     context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function checkIfAble() {
+    document.getElementById('placeBasicTowerBtn').disabled = cash < 100;
+    document.getElementById('placeSniperTowerBtn').disabled = cash < 150;
 }
 
 function drawPath() {
@@ -110,30 +111,21 @@ function place() {
         towers[towers.length - 1].update(mouse.x, mouse.y);
         drawTowersFull();
     } else {
+        cash -= towers[towers.length - 1].price;
+        document.getElementById('cashLbl').innerHTML = "$" + cash;
+        checkIfAble();
         drawTowers();
     }
     drawPath();
 }
 
 let round = 1;
-let circles = [];
-function createCirclesForRound(r) {
-    circles = [];
-    if (r === 1) {
-        circles[0] = new Circle(50, 1, 'green');
-        circles[1] = new Circle(40, 2, 'red');
-        circles[2] = new Circle(40, 5, 'yellow');
-    } else if (r === 2) {
-        circles[0] = new Circle(50, 5, 'black');
-        circles[1] = new Circle(40, 2, 'gray');
-        circles[2] = new Circle(50, 5, 'black');
-    }
-}
+let enemies = [];
 
 let running = false;
 function run() {
     running = true;
-    createCirclesForRound(round);
+    enemies = createEnemiesForRound(context, round);
     startRound();
 }
 
@@ -142,32 +134,27 @@ function startRound() {
     drawTowers();
     drawPath();
 
-    for (let i = 0; i < circles.length; i++) {
-        let x = parseInt(pathElement.getPointAtLength(circles[i].step).x);
-        let y = parseInt(pathElement.getPointAtLength(circles[i].step).y);
-        circles[i].x = x;
-        circles[i].y = y;
-        move(x, y, circles[i].radius, circles[i].color);
-        circles[i].step += circles[i].speed;
+    for (let i = 0; i < enemies.length; i++) {
+        let x = parseInt(pathElement.getPointAtLength(enemies[i].step).x);
+        let y = parseInt(pathElement.getPointAtLength(enemies[i].step).y);
+        enemies[i].update(x, y);
+        enemies[i].move();
     }
 
-    for (let i = circles.length - 1; i >= 0; i--) {
+    for (let i = enemies.length - 1; i >= 0; i--) {
         for (let j = 0; j < towers.length; j++) {
-            if (circles[i].radius > 0 && getDistance(circles[i].x, circles[i].y, towers[j].x, towers[j].y) < towers[j].rangeRadius) {
-                context.beginPath();
-                context.moveTo(towers[j].x, towers[j].y);
-                context.lineTo(circles[i].x, circles[i].y);
-                context.stroke();
-                circles[i].radius -= 0.5;
-                if (circles[i].radius === 0) {
-                    circles.splice(i, 1);
+            if (enemies[i].alive > 0 && getDistance(enemies[i].x, enemies[i].y, towers[j].x, towers[j].y) < towers[j].rangeRadius) {
+                drawAttack(towers[j].x, towers[j].y, enemies[i].x, enemies[i].y);
+                enemies[i].hit(towers[j].damage);
+                if (!enemies[i].alive) {
+                    enemies.splice(i, 1);
                 }
                 break;
             }
         }
     }
 
-    if (circles.length === 0) {
+    if (enemies.length === 0) {
         running = false;
     }
     if (!running) {
@@ -178,10 +165,9 @@ function startRound() {
     }
 }
 
-function move(x, y, radius, color) {
+function drawAttack(towerX, towerY, enemyX, enemyY) {
     context.beginPath();
-    context.arc(x, y, radius, 0, Math.PI * 2, true);
-    context.fillStyle = color
-    context.fill();
-    context.closePath();
+    context.moveTo(towerX, towerY);
+    context.lineTo(enemyX, enemyY);
+    context.stroke();
 }

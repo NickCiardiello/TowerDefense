@@ -35,6 +35,5 @@ function drawTowerFull(tower) {
     drawTower(tower);
 }
 
-
 module.exports = { randomIntFromRange, randomColor, getDistance, drawTower, drawTowerRange, drawTowerFull }
 

@@ -86,6 +86,47 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/js/Rounds.js":
+/*!**************************!*\
+  !*** ./src/js/Rounds.js ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _enemies_Circle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enemies/Circle */ "./src/js/enemies/Circle.js");
+/* harmony import */ var _enemies_Squares__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./enemies/Squares */ "./src/js/enemies/Squares.js");
+
+
+
+function createEnemiesForRound(context, round) {
+  var enemies = [];
+
+  switch (round) {
+    case 1:
+      enemies[0] = new _enemies_Squares__WEBPACK_IMPORTED_MODULE_1__["default"](context, 'red');
+      enemies[1] = new _enemies_Squares__WEBPACK_IMPORTED_MODULE_1__["default"](context, 'gray');
+      enemies[2] = new _enemies_Circle__WEBPACK_IMPORTED_MODULE_0__["default"](context, 'blue');
+      enemies[3] = new _enemies_Circle__WEBPACK_IMPORTED_MODULE_0__["default"](context, 'yellow');
+      break;
+
+    case 2:
+      enemies[0] = new _enemies_Circle__WEBPACK_IMPORTED_MODULE_0__["default"](context, 'blue');
+      enemies[1] = new _enemies_Circle__WEBPACK_IMPORTED_MODULE_0__["default"](context, 'yellow');
+      break;
+
+    default:
+      break;
+  }
+
+  return enemies;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (createEnemiesForRound);
+
+/***/ }),
+
 /***/ "./src/js/canvas.js":
 /*!**************************!*\
   !*** ./src/js/canvas.js ***!
@@ -95,12 +136,10 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/js/utils.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _towers_Tower__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./towers/Tower */ "./src/js/towers/Tower.js");
-/* harmony import */ var _towers_BasicTower__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./towers/BasicTower */ "./src/js/towers/BasicTower.js");
-/* harmony import */ var _towers_SniperTower__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./towers/SniperTower */ "./src/js/towers/SniperTower.js");
-
+/* harmony import */ var _towers_Tower__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./towers/Tower */ "./src/js/towers/Tower.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/js/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Rounds__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Rounds */ "./src/js/Rounds.js");
 
 
 
@@ -124,6 +163,7 @@ var path2D = new Path2D(curPath);
 var pathElement = document.createElementNS('http://www.w3.org/2000/svg', "path");
 pathElement.setAttributeNS(null, 'd', backwardsCPath);
 drawPath();
+var cash = 200;
 
 function switchPath() {
   if (curPath === sPath) {
@@ -140,15 +180,6 @@ function switchPath() {
   drawPath();
 }
 
-function Circle(radius, speed, color, step) {
-  this.radius = radius;
-  this.speed = speed;
-  this.color = color;
-  this.step = 0;
-  var x;
-  var y;
-}
-
 document.getElementById("playBtn").addEventListener("click", run, false);
 document.getElementById("pathBtn").addEventListener("click", switchPath, false);
 document.getElementById("placeBasicTowerBtn").addEventListener("click", function () {
@@ -157,9 +188,25 @@ document.getElementById("placeBasicTowerBtn").addEventListener("click", function
 document.getElementById("placeSniperTowerBtn").addEventListener("click", function () {
   placeTower('SniperTower');
 }, false);
+document.getElementById('cashLbl').innerText = "$" + cash;
+checkIfAble();
 
 function clear() {
   context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function checkIfAble() {
+  if (cash < 100) {
+    document.getElementById('placeBasicTowerBtn').disabled = true;
+  } else {
+    document.getElementById('placeBasicTowerBtn').disabled = false;
+  }
+
+  if (cash < 150) {
+    document.getElementById('placeSniperTowerBtn').disabled = true;
+  } else {
+    document.getElementById('placeSniperTowerBtn').disabled = false;
+  }
 }
 
 function drawPath() {
@@ -203,7 +250,7 @@ document.addEventListener('keydown', function (event) {
 
 function placeTower(towerType) {
   placing = true;
-  towers[towers.length] = new _towers_Tower__WEBPACK_IMPORTED_MODULE_1__["default"](context, towerType, mouse.x, mouse.y);
+  towers[towers.length] = new _towers_Tower__WEBPACK_IMPORTED_MODULE_0__["default"](context, towerType, mouse.x, mouse.y);
   place();
 }
 
@@ -215,6 +262,9 @@ function place() {
     towers[towers.length - 1].update(mouse.x, mouse.y);
     drawTowersFull();
   } else {
+    cash -= towers[towers.length - 1].price;
+    document.getElementById('cashLbl').innerHTML = "$" + cash;
+    checkIfAble();
     drawTowers();
   }
 
@@ -222,27 +272,12 @@ function place() {
 }
 
 var round = 1;
-var circles = [];
-
-function createCirclesForRound(r) {
-  circles = [];
-
-  if (r === 1) {
-    circles[0] = new Circle(50, 1, 'green');
-    circles[1] = new Circle(40, 2, 'red');
-    circles[2] = new Circle(40, 5, 'yellow');
-  } else if (r === 2) {
-    circles[0] = new Circle(50, 5, 'black');
-    circles[1] = new Circle(40, 2, 'gray');
-    circles[2] = new Circle(50, 5, 'black');
-  }
-}
-
+var enemies = [];
 var running = false;
 
 function run() {
   running = true;
-  createCirclesForRound(round);
+  enemies = Object(_Rounds__WEBPACK_IMPORTED_MODULE_2__["default"])(context, round);
   startRound();
 }
 
@@ -251,26 +286,22 @@ function startRound() {
   drawTowers();
   drawPath();
 
-  for (var i = 0; i < circles.length; i++) {
-    var x = parseInt(pathElement.getPointAtLength(circles[i].step).x);
-    var y = parseInt(pathElement.getPointAtLength(circles[i].step).y);
-    circles[i].x = x;
-    circles[i].y = y;
-    move(x, y, circles[i].radius, circles[i].color);
-    circles[i].step += circles[i].speed;
+  for (var i = 0; i < enemies.length; i++) {
+    var x = parseInt(pathElement.getPointAtLength(enemies[i].step).x);
+    var y = parseInt(pathElement.getPointAtLength(enemies[i].step).y);
+    enemies[i].update(x, y);
+    enemies[i].move();
   }
 
-  for (var _i2 = circles.length - 1; _i2 >= 0; _i2--) {
+  for (var _i2 = enemies.length - 1; _i2 >= 0; _i2--) {
     for (var j = 0; j < towers.length; j++) {
-      if (circles[_i2].radius > 0 && Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getDistance"])(circles[_i2].x, circles[_i2].y, towers[j].x, towers[j].y) < towers[j].rangeRadius) {
-        context.beginPath();
-        context.moveTo(towers[j].x, towers[j].y);
-        context.lineTo(circles[_i2].x, circles[_i2].y);
-        context.stroke();
-        circles[_i2].radius -= 0.5;
+      if (enemies[_i2].alive > 0 && Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getDistance"])(enemies[_i2].x, enemies[_i2].y, towers[j].x, towers[j].y) < towers[j].rangeRadius) {
+        drawAttack(towers[j].x, towers[j].y, enemies[_i2].x, enemies[_i2].y);
 
-        if (circles[_i2].radius === 0) {
-          circles.splice(_i2, 1);
+        enemies[_i2].hit(towers[j].damage);
+
+        if (!enemies[_i2].alive) {
+          enemies.splice(_i2, 1);
         }
 
         break;
@@ -278,7 +309,7 @@ function startRound() {
     }
   }
 
-  if (circles.length === 0) {
+  if (enemies.length === 0) {
     running = false;
   }
 
@@ -290,134 +321,173 @@ function startRound() {
   }
 }
 
-function move(x, y, radius, color) {
+function drawAttack(towerX, towerY, enemyX, enemyY) {
   context.beginPath();
-  context.arc(x, y, radius, 0, Math.PI * 2, true);
-  context.fillStyle = color;
-  context.fill();
-  context.closePath();
+  context.moveTo(towerX, towerY);
+  context.lineTo(enemyX, enemyY);
+  context.stroke();
 }
 
 /***/ }),
 
-/***/ "./src/js/towers/BasicTower.js":
-/*!*************************************!*\
-  !*** ./src/js/towers/BasicTower.js ***!
-  \*************************************/
+/***/ "./src/js/enemies/Circle.js":
+/*!**********************************!*\
+  !*** ./src/js/enemies/Circle.js ***!
+  \**********************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BasicTower; });
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./src/js/utils.js");
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Circle; });
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-
-
-var BasicTower = /*#__PURE__*/function () {
-  function BasicTower(context, x, y) {
-    _classCallCheck(this, BasicTower);
+var Circle = /*#__PURE__*/function () {
+  function Circle(context, color) {
+    _classCallCheck(this, Circle);
 
     this.context = context;
-    this.x = x;
-    this.y = y;
-    this.radius = 25;
-    this.rangeRadius = 125;
-    this.color = '#964b00';
+    this.step = 0;
+    this.x = 0;
+    this.y = 0;
+    this.alive = true;
+
+    switch (color) {
+      case "blue":
+        this.radius = 50;
+        this.speed = 5;
+        this.color = 'blue';
+        break;
+
+      case "yellow":
+        this.radius = 30;
+        this.speed = 10;
+        this.color = 'yellow';
+        break;
+
+      default:
+        this.radius = 0;
+        this.rangeRadius = 0;
+        this.color = '#000';
+    }
   }
 
-  _createClass(BasicTower, [{
-    key: "drawTower",
-    value: function drawTower() {
-      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["drawTower"])(this);
-    }
-  }, {
-    key: "drawTowerFull",
-    value: function drawTowerFull() {
-      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["drawTowerFull"])(this);
-    }
-  }, {
-    key: "drawTowerRange",
-    value: function drawTowerRange() {
-      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["drawTowerRange"])(this);
+  _createClass(Circle, [{
+    key: "move",
+    value: function move() {
+      this.context.beginPath();
+      this.context.fillStyle = this.color;
+      this.context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+      this.context.fill();
+      this.context.closePath();
     }
   }, {
     key: "update",
     value: function update(x, y) {
       this.x = x;
       this.y = y;
+      this.step += this.speed;
+    }
+  }, {
+    key: "hit",
+    value: function hit(damage) {
+      this.radius -= damage;
+
+      if (this.radius <= 0) {
+        this.alive = false;
+      }
     }
   }]);
 
-  return BasicTower;
+  return Circle;
 }();
 
 
 
 /***/ }),
 
-/***/ "./src/js/towers/SniperTower.js":
-/*!**************************************!*\
-  !*** ./src/js/towers/SniperTower.js ***!
-  \**************************************/
+/***/ "./src/js/enemies/Squares.js":
+/*!***********************************!*\
+  !*** ./src/js/enemies/Squares.js ***!
+  \***********************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SniperTower; });
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./src/js/utils.js");
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Square; });
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-
-
-var SniperTower = /*#__PURE__*/function () {
-  function SniperTower(context, x, y) {
-    _classCallCheck(this, SniperTower);
+var Square = /*#__PURE__*/function () {
+  function Square(context, color) {
+    _classCallCheck(this, Square);
 
     this.context = context;
-    this.x = x;
-    this.y = y;
-    this.radius = 10;
-    this.rangeRadius = 500;
-    this.color = '#00ff00';
+    this.step = 0;
+    this.x = 0;
+    this.y = 0;
+    this.alive = true;
+
+    switch (color) {
+      case "red":
+        this.speed = 3;
+        this.height = 60;
+        this.width = 60;
+        this.color = 'red';
+        break;
+
+      case "gray":
+        this.speed = 1;
+        this.height = 40;
+        this.width = 40;
+        this.color = 'gray';
+        break;
+
+      default:
+        this.speed = 0;
+        this.height = 0;
+        this.width = 0;
+        this.color = 'black';
+    }
   }
 
-  _createClass(SniperTower, [{
-    key: "drawTower",
-    value: function drawTower() {
-      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["drawTower"])(this);
-    }
-  }, {
-    key: "drawTowerFull",
-    value: function drawTowerFull(x, y) {
-      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["drawTowerFull"])(this);
-    }
-  }, {
-    key: "drawTowerRange",
-    value: function drawTowerRange() {
-      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["drawTowerRange"])(this);
+  _createClass(Square, [{
+    key: "move",
+    value: function move() {
+      this.context.beginPath();
+      this.context.fillStyle = this.color;
+      this.context.rect(this.x, this.y, this.width, this.height);
+      this.context.fill();
+      this.context.closePath();
     }
   }, {
     key: "update",
     value: function update(x, y) {
       this.x = x;
       this.y = y;
+      this.step += this.speed;
+    }
+  }, {
+    key: "hit",
+    value: function hit(damage) {
+      this.height -= damage;
+      this.width -= damage;
+
+      if (this.height <= 0 || this.width <= 0) {
+        this.alive = false;
+      }
     }
   }]);
 
-  return SniperTower;
+  return Square;
 }();
 
 
@@ -457,18 +527,23 @@ var Tower = /*#__PURE__*/function () {
         this.radius = 25;
         this.rangeRadius = 125;
         this.color = '#964b00';
+        this.damage = 0.5;
+        this.price = 100;
         break;
 
       case "SniperTower":
         this.radius = 10;
         this.rangeRadius = 500;
         this.color = '#00ff00';
+        this.damage = 0.25;
+        this.price = 150;
         break;
 
       default:
         this.radius = 0;
         this.rangeRadius = 0;
         this.color = '#000';
+        this.damage = 0;
     }
   }
 
