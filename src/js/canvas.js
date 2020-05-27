@@ -1,6 +1,6 @@
 import Tower from './towers/Tower';
 import { getDistance } from './utils';
-import createEnemiesForRound from "./Rounds";
+import { createEnemiesForRound, getReward } from "./Rounds";
 
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
@@ -156,6 +156,8 @@ function startRound() {
                 drawAttack(towers[j].x, towers[j].y, enemies[i].x, enemies[i].y);
                 enemies[i].hit(towers[j].damage);
                 if (!enemies[i].alive) {
+                    cash += enemies[i].damage;
+                    document.getElementById('cashLbl').innerHTML = "$" + cash;
                     enemies.splice(i, 1);
                 }
                 break;
@@ -165,11 +167,12 @@ function startRound() {
 
     if (enemies.length === 0) {
         running = false;
-    }
-    if (!running) {
+        cash += getReward(round);
+        document.getElementById('cashLbl').innerHTML = "$" + cash;
         round++;
         document.getElementById('playBtn').innerHTML = "Play Round " + round;
-    } else {
+    }
+    else {
         requestAnimationFrame(startRound)
     }
 }

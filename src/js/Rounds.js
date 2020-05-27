@@ -1,9 +1,8 @@
 import Circle from "./enemies/Circle";
 import Square from "./enemies/Squares";
 
-function createEnemiesForRound(context, round) {
+export function createEnemiesForRound(context, round) {
     let enemies = [];
-
     switch (round) {
         case 1:
             enemies[0] = new Square(context, 'red');
@@ -20,5 +19,15 @@ function createEnemiesForRound(context, round) {
     }
     return enemies;
 }
-export default createEnemiesForRound
+
+export function getReward(round) {
+    switch(round) {
+        case 1:
+            return 50;
+        case 2:
+            return 50;
+        default:
+            return 0;
+    }
+}
 

@@ -90,14 +90,15 @@
 /*!**************************!*\
   !*** ./src/js/Rounds.js ***!
   \**************************/
-/*! exports provided: default */
+/*! exports provided: createEnemiesForRound, getReward */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createEnemiesForRound", function() { return createEnemiesForRound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getReward", function() { return getReward; });
 /* harmony import */ var _enemies_Circle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enemies/Circle */ "./src/js/enemies/Circle.js");
 /* harmony import */ var _enemies_Squares__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./enemies/Squares */ "./src/js/enemies/Squares.js");
-
 
 
 function createEnemiesForRound(context, round) {
@@ -122,8 +123,18 @@ function createEnemiesForRound(context, round) {
 
   return enemies;
 }
+function getReward(round) {
+  switch (round) {
+    case 1:
+      return 50;
 
-/* harmony default export */ __webpack_exports__["default"] = (createEnemiesForRound);
+    case 2:
+      return 50;
+
+    default:
+      return 0;
+  }
+}
 
 /***/ }),
 
@@ -269,7 +280,7 @@ var running = false;
 
 function run() {
   running = true;
-  enemies = Object(_Rounds__WEBPACK_IMPORTED_MODULE_2__["default"])(context, round);
+  enemies = Object(_Rounds__WEBPACK_IMPORTED_MODULE_2__["createEnemiesForRound"])(context, round);
   startRound();
 }
 
@@ -303,6 +314,8 @@ function startRound() {
         enemies[_i2].hit(towers[j].damage);
 
         if (!enemies[_i2].alive) {
+          cash += enemies[_i2].damage;
+          document.getElementById('cashLbl').innerHTML = "$" + cash;
           enemies.splice(_i2, 1);
         }
 
@@ -313,9 +326,8 @@ function startRound() {
 
   if (enemies.length === 0) {
     running = false;
-  }
-
-  if (!running) {
+    cash += Object(_Rounds__WEBPACK_IMPORTED_MODULE_2__["getReward"])(round);
+    document.getElementById('cashLbl').innerHTML = "$" + cash;
     round++;
     document.getElementById('playBtn').innerHTML = "Play Round " + round;
   } else {
