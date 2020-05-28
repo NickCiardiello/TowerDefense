@@ -1,4 +1,6 @@
-import { drawTower, drawTowerRange, drawTowerFull } from '../utils.js';
+// import { drawTower, drawTowerRange, drawTowerFull } from '../utils.js';
+import { drawTower, drawTowerRange, drawTowerFull } from "../Draw";
+
 export default class Tower {
     constructor(context, towerType, x, y) {
         this.context = context;
