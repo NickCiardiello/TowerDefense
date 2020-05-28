@@ -22,6 +22,7 @@ export const mapDropdown = document.getElementById ("mapDropdown");
 export const placeBasicTowerBtn = document.getElementById ("placeBasicTowerBtn");
 export const placeSniperTowerBtn = document.getElementById ("placeSniperTowerBtn");
 export const placeSentryTowerBtn = document.getElementById ("placeSentryTowerBtn");
+export const upgradeBtn = document.getElementById ("upgradeBtn");
 export const cashLbl = document.getElementById('cashLbl');
 export const healthLbl = document.getElementById('healthLbl');
 

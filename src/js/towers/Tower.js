@@ -2,11 +2,14 @@ import { drawTower, drawTowerRange, drawTowerFull } from "../Draw";
 
 export default class Tower {
     constructor(towerType, x, y) {
+        this.towerType = towerType;
         this.x = x
         this.y = y
         this.radius = 25;
         this.rangeRadius = 25;
         this.damage = 0;
+        this.numTargets = 1;
+        this.rank = 1;
         this.detectCamo = false;
         this.armorPiercing = false;
         this.isSelected = false;
@@ -49,6 +52,30 @@ export default class Tower {
     update(x, y) {
         this.x = x;
         this.y = y;
+    }
+
+    getUpgradePrice() {
+        return this.rank * 50;
+    }
+
+    getUpgradeText() {
+        switch (this.towerType) {
+            case 'BasicTower':
+                if (this.rank === 1) {
+                    return "Dual Wield";
+                } else if (this.rank === 2) {
+                    return "Increase Attack";
+                }
+                this.rank++;
+                break;
+            default:
+                return 'Fully upgraded';
+        }
+    }
+
+    upgrade() {
+        this.numTargets++;
+        this.rank++;
     }
 }
 

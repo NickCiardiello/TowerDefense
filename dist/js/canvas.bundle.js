@@ -90,7 +90,7 @@
 /*!*****************************!*\
   !*** ./src/js/Constants.js ***!
   \*****************************/
-/*! exports provided: canvas, context, mouse, pathElement, playBtn, mapDropdown, placeBasicTowerBtn, placeSniperTowerBtn, placeSentryTowerBtn, cashLbl, healthLbl */
+/*! exports provided: canvas, context, mouse, pathElement, playBtn, mapDropdown, placeBasicTowerBtn, placeSniperTowerBtn, placeSentryTowerBtn, upgradeBtn, cashLbl, healthLbl */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -104,6 +104,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "placeBasicTowerBtn", function() { return placeBasicTowerBtn; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "placeSniperTowerBtn", function() { return placeSniperTowerBtn; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "placeSentryTowerBtn", function() { return placeSentryTowerBtn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "upgradeBtn", function() { return upgradeBtn; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cashLbl", function() { return cashLbl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "healthLbl", function() { return healthLbl; });
 // Canvas + Context
@@ -128,6 +129,7 @@ var mapDropdown = document.getElementById("mapDropdown");
 var placeBasicTowerBtn = document.getElementById("placeBasicTowerBtn");
 var placeSniperTowerBtn = document.getElementById("placeSniperTowerBtn");
 var placeSentryTowerBtn = document.getElementById("placeSentryTowerBtn");
+var upgradeBtn = document.getElementById("upgradeBtn");
 var cashLbl = document.getElementById('cashLbl');
 var healthLbl = document.getElementById('healthLbl');
 
@@ -391,6 +393,7 @@ if (devMode) {
   _Constants__WEBPACK_IMPORTED_MODULE_1__["healthLbl"].innerHTML = "Health: " + health;
 }
 
+var selectedTower;
 var towers = [];
 var enemies = [];
 var placing = false;
@@ -415,12 +418,23 @@ _Constants__WEBPACK_IMPORTED_MODULE_1__["placeSniperTowerBtn"].addEventListener(
 _Constants__WEBPACK_IMPORTED_MODULE_1__["placeSentryTowerBtn"].addEventListener("click", function () {
   placeTower('SentryTower');
 }, false);
+_Constants__WEBPACK_IMPORTED_MODULE_1__["upgradeBtn"].addEventListener("click", function () {
+  upgrade();
+}, false);
 _Constants__WEBPACK_IMPORTED_MODULE_1__["canvas"].addEventListener('click', function () {
   if (placing) {
     placing = false;
   } else {
     for (var i = 0; i < towers.length; i++) {
-      towers[i].isSelected = Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getDistance"])(_Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y, towers[i].x, towers[i].y) < towers[i].radius;
+      if (Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getDistance"])(_Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y, towers[i].x, towers[i].y) < towers[i].radius) {
+        selectedTower = towers[i];
+        selectedTower.isSelected = true;
+        checkUpgrade();
+      } // towers[i].isSelected = getDistance(mouse.x, mouse.y, towers[i].x, towers[i].y) < towers[i].radius;
+      // upgradeBtn.disabled = false;
+      // upgradeBtn.innerText = "Dual Wield ($50)";
+
+
       Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
       Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
       Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
@@ -486,10 +500,14 @@ function moveEnemies() {
 
 function attack() {
   for (var i = 0; i < towers.length; i++) {
+    console.log(towers[i].numTargets);
+    var numTargets = towers[i].numTargets;
+
     for (var j = 0; j < enemies.length; j++) {
       if (Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getDistance"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius && enemies[i].step >= 0 && (!enemies[i].camo || enemies[i].camo && towers[i].detectCamo)) {
         Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawAttack"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
         enemies[j].hit(towers[i].damage);
+        numTargets--;
 
         if (!enemies[j].alive) {
           cash += enemies[j].damage;
@@ -497,7 +515,9 @@ function attack() {
           enemies.splice(j, 1);
         }
 
-        break;
+        if (numTargets === 0) {
+          break;
+        }
       }
     }
   }
@@ -557,6 +577,18 @@ function checkAfford() {
   _Constants__WEBPACK_IMPORTED_MODULE_1__["placeBasicTowerBtn"].disabled = cash < 100;
   _Constants__WEBPACK_IMPORTED_MODULE_1__["placeSentryTowerBtn"].disabled = cash < 100;
   _Constants__WEBPACK_IMPORTED_MODULE_1__["placeSniperTowerBtn"].disabled = cash < 150;
+}
+
+function upgrade() {
+  selectedTower.upgrade();
+  checkUpgrade();
+}
+
+function checkUpgrade() {
+  if (cash >= selectedTower.getUpgradePrice()) {
+    _Constants__WEBPACK_IMPORTED_MODULE_1__["upgradeBtn"].disabled = false;
+    _Constants__WEBPACK_IMPORTED_MODULE_1__["upgradeBtn"].innerText = selectedTower.getUpgradeText();
+  }
 }
 
 /***/ }),
@@ -702,11 +734,14 @@ var Tower = /*#__PURE__*/function () {
   function Tower(towerType, x, y) {
     _classCallCheck(this, Tower);
 
+    this.towerType = towerType;
     this.x = x;
     this.y = y;
     this.radius = 25;
     this.rangeRadius = 25;
     this.damage = 0;
+    this.numTargets = 1;
+    this.rank = 1;
     this.detectCamo = false;
     this.armorPiercing = false;
     this.isSelected = false;
@@ -757,6 +792,35 @@ var Tower = /*#__PURE__*/function () {
     value: function update(x, y) {
       this.x = x;
       this.y = y;
+    }
+  }, {
+    key: "getUpgradePrice",
+    value: function getUpgradePrice() {
+      return this.rank * 50;
+    }
+  }, {
+    key: "getUpgradeText",
+    value: function getUpgradeText() {
+      switch (this.towerType) {
+        case 'BasicTower':
+          if (this.rank === 1) {
+            return "Dual Wield";
+          } else if (this.rank === 2) {
+            return "Increase Attack";
+          }
+
+          this.rank++;
+          break;
+
+        default:
+          return 'Fully upgraded';
+      }
+    }
+  }, {
+    key: "upgrade",
+    value: function upgrade() {
+      this.numTargets++;
+      this.rank++;
     }
   }]);
 

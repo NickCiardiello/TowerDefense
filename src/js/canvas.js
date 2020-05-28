@@ -7,7 +7,7 @@ import {
     healthLbl,
     playBtn,
     mapDropdown,
-    placeBasicTowerBtn, placeSniperTowerBtn, placeSentryTowerBtn,
+    placeBasicTowerBtn, placeSniperTowerBtn, placeSentryTowerBtn, upgradeBtn,
 } from './Constants';
 import { getDistance } from './utils';
 import { createEnemiesForRound, getReward } from './Rounds';
@@ -25,6 +25,7 @@ if (devMode) {
     health = 100000;
     healthLbl.innerHTML = "Health: " + health;
 }
+let selectedTower;
 let towers = [];
 let enemies = [];
 let placing = false;
@@ -41,12 +42,20 @@ mapDropdown.addEventListener ("change", function() { setNewMap() }, false);
 placeBasicTowerBtn.addEventListener ("click", function() { placeTower('BasicTower') }, false);
 placeSniperTowerBtn.addEventListener ("click", function() { placeTower('SniperTower') }, false);
 placeSentryTowerBtn.addEventListener ("click", function() { placeTower('SentryTower') }, false);
+upgradeBtn.addEventListener ("click", function() { upgrade() }, false);
 canvas.addEventListener('click', function() {
     if (placing) {
         placing = false;
     } else {
         for (let i = 0; i < towers.length; i++) {
-            towers[i].isSelected = getDistance(mouse.x, mouse.y, towers[i].x, towers[i].y) < towers[i].radius;
+            if (getDistance(mouse.x, mouse.y, towers[i].x, towers[i].y) < towers[i].radius) {
+                selectedTower = towers[i];
+                selectedTower.isSelected = true;
+                checkUpgrade();
+            }
+            // towers[i].isSelected = getDistance(mouse.x, mouse.y, towers[i].x, towers[i].y) < towers[i].radius;
+            // upgradeBtn.disabled = false;
+            // upgradeBtn.innerText = "Dual Wield ($50)";
             clear();
             drawTowers(towers);
             drawPath();
@@ -106,18 +115,23 @@ function moveEnemies() {
 }
 function attack() {
     for (let i = 0; i < towers.length; i++) {
+        console.log(towers[i].numTargets);
+        let numTargets = towers[i].numTargets;
         for (let j = 0; j < enemies.length; j++) {
             if (getDistance(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius &&
                 enemies[i].step >= 0 &&
                 (!enemies[i].camo || (enemies[i].camo && towers[i].detectCamo))) {
                 drawAttack(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
                 enemies[j].hit(towers[i].damage);
+                numTargets--;
                 if (!enemies[j].alive) {
                     cash += enemies[j].damage;
                     cashLbl.innerHTML = "$" + cash;
                     enemies.splice(j, 1);
                 }
-                break;
+                if (numTargets === 0) {
+                    break;
+                }
             }
         }
     }
@@ -172,3 +186,16 @@ function checkAfford() {
     placeSentryTowerBtn.disabled = cash < 100;
     placeSniperTowerBtn.disabled = cash < 150;
 }
+
+function upgrade() {
+    selectedTower.upgrade();
+    checkUpgrade();
+}
+
+function checkUpgrade() {
+    if (cash >= selectedTower.getUpgradePrice()) {
+        upgradeBtn.disabled = false;
+        upgradeBtn.innerText = selectedTower.getUpgradeText();
+    }
+}
+
