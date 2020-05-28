@@ -49,13 +49,12 @@ canvas.addEventListener('click', function() {
     } else {
         for (let i = 0; i < towers.length; i++) {
             if (getDistance(mouse.x, mouse.y, towers[i].x, towers[i].y) < towers[i].radius) {
+                towers[i].isSelected = true;
                 selectedTower = towers[i];
-                selectedTower.isSelected = true;
                 checkUpgrade();
+            } else {
+                towers[i].isSelected = false;
             }
-            // towers[i].isSelected = getDistance(mouse.x, mouse.y, towers[i].x, towers[i].y) < towers[i].radius;
-            // upgradeBtn.disabled = false;
-            // upgradeBtn.innerText = "Dual Wield ($50)";
             clear();
             drawTowers(towers);
             drawPath();

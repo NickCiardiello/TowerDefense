@@ -96,6 +96,8 @@ export function drawTowers(towers) {
         if (towers[i].isSelected) {
             towers[i].drawTowerRange();
         }
+    }
+    for (let i = 0; i < towers.length; i++) {
         towers[i].drawTower();
     }
 }

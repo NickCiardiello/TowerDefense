@@ -68,13 +68,36 @@ export default class Tower {
                 }
                 this.rank++;
                 break;
+            case 'SniperTower':
+                if (this.rank === 1) {
+                    return "Camo Detection";
+                } else if (this.rank === 2) {
+                    return "Armor Piercing Rounds";
+                }
             default:
                 return 'Fully upgraded';
         }
     }
 
     upgrade() {
-        this.numTargets++;
+        switch (this.towerType) {
+            case 'BasicTower':
+                if (this.rank === 1) {
+                    this.numTargets++;
+                } else if (this.rank === 2) {
+                    this.damage *= 2;
+                }
+                break;
+            case 'SniperTower':
+                if (this.rank === 1) {
+                    this.detectCamo = true;
+                } else if (this.rank === 2) {
+                    this.armorPiercing = true;
+                }
+                break;
+            default:
+                break;
+        }
         this.rank++;
     }
 }

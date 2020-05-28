@@ -249,8 +249,10 @@ function drawTowers(towers) {
     if (towers[i].isSelected) {
       towers[i].drawTowerRange();
     }
+  }
 
-    towers[i].drawTower();
+  for (var _i = 0; _i < towers.length; _i++) {
+    towers[_i].drawTower();
   }
 }
 function drawTowersFull(towers) {
@@ -258,8 +260,8 @@ function drawTowersFull(towers) {
     towers[i].drawTowerRange();
   }
 
-  for (var _i = 0; _i < towers.length; _i++) {
-    towers[_i].drawTower();
+  for (var _i2 = 0; _i2 < towers.length; _i2++) {
+    towers[_i2].drawTower();
   }
 }
 function drawAttack(towerX, towerY, enemyX, enemyY) {
@@ -342,7 +344,7 @@ function createEnemiesForRound(round) {
       // Start yellow square with delay at 2x speed with armor and camo
       // enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
       for (var i = 0; i < 5; i++) {
-        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'red', i * -100, 5, 0, false);
+        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', i * -100, 1, 0, false);
       }
 
       break;
@@ -427,13 +429,12 @@ _Constants__WEBPACK_IMPORTED_MODULE_1__["canvas"].addEventListener('click', func
   } else {
     for (var i = 0; i < towers.length; i++) {
       if (Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getDistance"])(_Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y, towers[i].x, towers[i].y) < towers[i].radius) {
+        towers[i].isSelected = true;
         selectedTower = towers[i];
-        selectedTower.isSelected = true;
         checkUpgrade();
-      } // towers[i].isSelected = getDistance(mouse.x, mouse.y, towers[i].x, towers[i].y) < towers[i].radius;
-      // upgradeBtn.disabled = false;
-      // upgradeBtn.innerText = "Dual Wield ($50)";
-
+      } else {
+        towers[i].isSelected = false;
+      }
 
       Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
       Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
@@ -812,6 +813,13 @@ var Tower = /*#__PURE__*/function () {
           this.rank++;
           break;
 
+        case 'SniperTower':
+          if (this.rank === 1) {
+            return "Camo Detection";
+          } else if (this.rank === 2) {
+            return "Armor Piercing Rounds";
+          }
+
         default:
           return 'Fully upgraded';
       }
@@ -819,7 +827,29 @@ var Tower = /*#__PURE__*/function () {
   }, {
     key: "upgrade",
     value: function upgrade() {
-      this.numTargets++;
+      switch (this.towerType) {
+        case 'BasicTower':
+          if (this.rank === 1) {
+            this.numTargets++;
+          } else if (this.rank === 2) {
+            this.damage *= 2;
+          }
+
+          break;
+
+        case 'SniperTower':
+          if (this.rank === 1) {
+            this.detectCamo = true;
+          } else if (this.rank === 2) {
+            this.armorPiercing = true;
+          }
+
+          break;
+
+        default:
+          break;
+      }
+
       this.rank++;
     }
   }]);
