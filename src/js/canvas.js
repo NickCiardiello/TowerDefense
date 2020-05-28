@@ -21,7 +21,9 @@ let health = 100;
 let devMode = true;
 if (devMode) {
     cash = 1000000;
+    cashLbl.innerHTML = "$" + cash;
     health = 100000;
+    healthLbl.innerHTML = "Health: " + health;
 }
 let towers = [];
 let enemies = [];
@@ -51,6 +53,73 @@ document.addEventListener('keydown', function(event) {
     }
 }, false);
 
+/*
+Play round
+ */
+function run() {
+    running = true;
+    enemies = createEnemiesForRound(round);
+    playRound();
+}
+function playRound() {
+    clear();
+    drawTowers(towers);
+    drawPath();
+    moveEnemies();
+    attack();
+    if (enemies.length === 0) {
+        endRound();
+    } else {
+        requestAnimationFrame(playRound)
+    }
+}
+function moveEnemies() {
+    for (let i = 0; i < enemies.length; i++) {
+        let x = parseInt(pathElement.getPointAtLength(enemies[i].step).x);
+        let y = parseInt(pathElement.getPointAtLength(enemies[i].step).y);
+        enemies[i].update(x, y);
+        enemies[i].move();
+
+        // Check if enemy reached the end of the map
+        if (enemies[i].step >= pathElement.getTotalLength()) {
+            health -= enemies[i].damage;
+            enemies.shift();
+            healthLbl.innerHTML = "Health: " + health;
+            if (health <= 0) {
+                alert('Game Over');
+            }
+        }
+
+        // Sort enemies in descending order by how far along they are on the map
+        enemies.sort((a, b) => (b.step - a.step));
+    }
+}
+function attack() {
+    for (let i = 0; i < towers.length; i++) {
+        for (let j = 0; j < enemies.length; j++) {
+            if (getDistance(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius &&
+                enemies[i].step >= 0 &&
+                (!enemies[i].camo || (enemies[i].camo && towers[i].detectCamo))) {
+                drawAttack(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
+                enemies[j].hit(towers[i].damage);
+                if (!enemies[j].alive) {
+                    cash += enemies[j].damage;
+                    cashLbl.innerHTML = "$" + cash;
+                    enemies.splice(j, 1);
+                }
+                break;
+            }
+        }
+    }
+}
+function endRound() {
+    running = false;
+    cash += getReward(round);
+    cashLbl.innerHTML = "$" + cash;
+    checkAfford();
+    round++;
+    playBtn.innerHTML = "Play Round " + round;
+}
 
 /*
 Drag and drop tower
@@ -73,60 +142,6 @@ function place() {
         drawTowers(towers);
     }
     drawPath();
-}
-
-/*
-Play round
- */
-function run() {
-    running = true;
-    enemies = createEnemiesForRound(round);
-    startRound();
-}
-function startRound() {
-    clear();
-    drawTowers(towers);
-    drawPath();
-    for (let i = 0; i < enemies.length; i++) {
-        let x = parseInt(pathElement.getPointAtLength(enemies[i].step).x);
-        let y = parseInt(pathElement.getPointAtLength(enemies[i].step).y);
-        enemies[i].update(x, y);
-        enemies[i].move();
-        if (enemies[i].step >= pathElement.getTotalLength()) {
-            health -= enemies[i].damage;
-            enemies.splice(i, 1);
-            healthLbl.innerHTML = "Health: " + health;
-            if (health <= 0) {
-                alert('Game Over');
-            }
-        }
-    }
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        for (let j = 0; j < towers.length; j++) {
-            if (enemies[i].alive > 0 && getDistance(enemies[i].x, enemies[i].y, towers[j].x, towers[j].y) < towers[j].rangeRadius) {
-                if (!enemies[i].camo || (enemies[i].camo && towers[j].detectCamo)) {
-                    drawAttack(towers[j].x, towers[j].y, enemies[i].x, enemies[i].y);
-                    enemies[i].hit(towers[j].damage);
-                }
-                if (!enemies[i].alive) {
-                    cash += enemies[i].damage;
-                    cashLbl.innerHTML = "$" + cash;
-                    enemies.splice(i, 1);
-                }
-            }
-        }
-    }
-    if (enemies.length === 0) {
-        running = false;
-        cash += getReward(round);
-        cashLbl.innerHTML = "$" + cash;
-        checkAfford();
-        round++;
-        playBtn.innerHTML = "Play Round " + round;
-    }
-    else {
-        requestAnimationFrame(startRound)
-    }
 }
 
 function setNewMap() {

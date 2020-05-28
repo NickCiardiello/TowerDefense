@@ -335,8 +335,12 @@ function createEnemiesForRound(round) {
       // enemies[1] = new Enemy('square', 'yellow', -150, 1, 0, false);
       // Start yellow square with delay at 2x speed with armor and camo
       // enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
-      enemies[0] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', 0, 1, 0, false);
-      enemies[1] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', -100, 1, 3, false);
+      for (var i = 0; i < 10; i++) {
+        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'red', i * -100, 5, 0, true);
+      }
+
+    // enemies[0] = new Enemy('circle', 'red', 0, 1, 0, false);
+    // enemies[1] = new Enemy('circle', 'red', -100, 1, 3, false);
 
     default:
       break;
@@ -379,7 +383,9 @@ var devMode = true;
 
 if (devMode) {
   cash = 1000000;
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["cashLbl"].innerHTML = "$" + cash;
   health = 100000;
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["healthLbl"].innerHTML = "Health: " + health;
 }
 
 var towers = [];
@@ -452,14 +458,29 @@ Play round
 function run() {
   running = true;
   enemies = Object(_Rounds__WEBPACK_IMPORTED_MODULE_3__["createEnemiesForRound"])(round);
-  startRound();
+  playRound();
 }
 
-function startRound() {
-  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
-  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
-  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
+function attack() {
+  for (var i = 0; i < towers.length; i++) {
+    for (var j = 0; j < enemies.length; j++) {
+      if (Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getDistance"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius && enemies[i].step >= 0 && (!enemies[i].camo || enemies[i].camo && towers[i].detectCamo)) {
+        Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawAttack"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
+        enemies[j].hit(towers[i].damage);
 
+        if (!enemies[j].alive) {
+          cash += enemies[j].damage;
+          _Constants__WEBPACK_IMPORTED_MODULE_1__["cashLbl"].innerHTML = "$" + cash;
+          enemies.splice(j, 1);
+        }
+
+        break;
+      }
+    }
+  }
+}
+
+function moveEnemies() {
   for (var i = 0; i < enemies.length; i++) {
     var x = parseInt(_Constants__WEBPACK_IMPORTED_MODULE_1__["pathElement"].getPointAtLength(enemies[i].step).x);
     var y = parseInt(_Constants__WEBPACK_IMPORTED_MODULE_1__["pathElement"].getPointAtLength(enemies[i].step).y);
@@ -468,43 +489,41 @@ function startRound() {
 
     if (enemies[i].step >= _Constants__WEBPACK_IMPORTED_MODULE_1__["pathElement"].getTotalLength()) {
       health -= enemies[i].damage;
-      enemies.splice(i, 1);
+      enemies.shift();
       _Constants__WEBPACK_IMPORTED_MODULE_1__["healthLbl"].innerHTML = "Health: " + health;
 
       if (health <= 0) {
         alert('Game Over');
       }
     }
+
+    enemies.sort(function (a, b) {
+      return b.step - a.step;
+    });
   }
+}
 
-  for (var _i = enemies.length - 1; _i >= 0; _i--) {
-    for (var j = 0; j < towers.length; j++) {
-      if (enemies[_i].alive > 0 && Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getDistance"])(enemies[_i].x, enemies[_i].y, towers[j].x, towers[j].y) < towers[j].rangeRadius) {
-        if (!enemies[_i].camo || enemies[_i].camo && towers[j].detectCamo) {
-          Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawAttack"])(towers[j].x, towers[j].y, enemies[_i].x, enemies[_i].y);
-
-          enemies[_i].hit(towers[j].damage);
-        }
-
-        if (!enemies[_i].alive) {
-          cash += enemies[_i].damage;
-          _Constants__WEBPACK_IMPORTED_MODULE_1__["cashLbl"].innerHTML = "$" + cash;
-          enemies.splice(_i, 1);
-        }
-      }
-    }
-  }
+function playRound() {
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
+  moveEnemies();
+  attack();
 
   if (enemies.length === 0) {
-    running = false;
-    cash += Object(_Rounds__WEBPACK_IMPORTED_MODULE_3__["getReward"])(round);
-    _Constants__WEBPACK_IMPORTED_MODULE_1__["cashLbl"].innerHTML = "$" + cash;
-    checkAfford();
-    round++;
-    _Constants__WEBPACK_IMPORTED_MODULE_1__["playBtn"].innerHTML = "Play Round " + round;
+    endRound();
   } else {
-    requestAnimationFrame(startRound);
+    requestAnimationFrame(playRound);
   }
+}
+
+function endRound() {
+  running = false;
+  cash += Object(_Rounds__WEBPACK_IMPORTED_MODULE_3__["getReward"])(round);
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["cashLbl"].innerHTML = "$" + cash;
+  checkAfford();
+  round++;
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["playBtn"].innerHTML = "Play Round " + round;
 }
 
 function setNewMap() {

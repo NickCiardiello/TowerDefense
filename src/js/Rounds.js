@@ -10,9 +10,10 @@ export function createEnemiesForRound(round) {
             // enemies[1] = new Enemy('square', 'yellow', -150, 1, 0, false);
             // Start yellow square with delay at 2x speed with armor and camo
             // enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
-
-            enemies[0] = new Enemy('circle', 'red', 0, 1, 0, false);
-            enemies[1] = new Enemy('circle', 'red', -100, 1, 3, false);
+            for (let i = 0; i < 5; i++) {
+                enemies[i] = new Enemy('square', 'red', i * -100, 5, 0, false);
+            }
+            break;
         default:
             break;
     }
