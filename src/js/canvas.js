@@ -1,6 +1,5 @@
 import Tower from './towers/Tower';
 import {
-    context,
     canvas,
     mouse,
     pathElement,
@@ -53,7 +52,7 @@ Drag and drop tower
  */
 function placeTower(towerType) {
     placing = true;
-    towers[towers.length] = new Tower(context, towerType, mouse.x, mouse.y);
+    towers[towers.length] = new Tower(towerType, mouse.x, mouse.y);
     place();
 }
 function place() {
@@ -80,7 +79,7 @@ function run() {
     startRound();
 }
 function startRound() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    clear();
     drawTowers(towers);
     drawPath();
     for (let i = 0; i < enemies.length; i++) {
