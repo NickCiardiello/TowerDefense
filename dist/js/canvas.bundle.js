@@ -335,12 +335,11 @@ function createEnemiesForRound(round) {
       // enemies[1] = new Enemy('square', 'yellow', -150, 1, 0, false);
       // Start yellow square with delay at 2x speed with armor and camo
       // enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
-      for (var i = 0; i < 10; i++) {
-        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'red', i * -100, 5, 0, true);
+      for (var i = 0; i < 5; i++) {
+        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'red', i * -100, 5, 0, false);
       }
 
-    // enemies[0] = new Enemy('circle', 'red', 0, 1, 0, false);
-    // enemies[1] = new Enemy('circle', 'red', -100, 1, 3, false);
+      break;
 
     default:
       break;
@@ -414,51 +413,63 @@ _Constants__WEBPACK_IMPORTED_MODULE_1__["placeSentryTowerBtn"].addEventListener(
 }, false);
 _Constants__WEBPACK_IMPORTED_MODULE_1__["canvas"].addEventListener('click', function () {
   placing = false;
-}, false);
+}, false); // canvas.addEventListener('click', function() { placing = false; }, false);
+
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape' && placing) {
     placing = false;
-    towers.pop();
     cash += towers[towers.length - 1].price;
+    towers.pop();
     Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
     Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
   }
 }, false);
 /*
-Drag and drop tower
- */
-
-function placeTower(towerType) {
-  placing = true;
-  towers[towers.length] = new _towers_Tower__WEBPACK_IMPORTED_MODULE_0__["default"](towerType, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y);
-  place();
-}
-
-function place() {
-  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
-
-  if (placing) {
-    requestAnimationFrame(place);
-    towers[towers.length - 1].update(_Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y);
-    Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowersFull"])(towers);
-  } else {
-    cash -= towers[towers.length - 1].price;
-    _Constants__WEBPACK_IMPORTED_MODULE_1__["cashLbl"].innerHTML = "$" + cash;
-    checkAfford(cash);
-    Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
-  }
-
-  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
-}
-/*
 Play round
  */
-
 
 function run() {
   running = true;
   enemies = Object(_Rounds__WEBPACK_IMPORTED_MODULE_3__["createEnemiesForRound"])(round);
   playRound();
+}
+
+function playRound() {
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
+  moveEnemies();
+  attack();
+
+  if (enemies.length === 0) {
+    endRound();
+  } else {
+    requestAnimationFrame(playRound);
+  }
+}
+
+function moveEnemies() {
+  for (var i = 0; i < enemies.length; i++) {
+    var x = parseInt(_Constants__WEBPACK_IMPORTED_MODULE_1__["pathElement"].getPointAtLength(enemies[i].step).x);
+    var y = parseInt(_Constants__WEBPACK_IMPORTED_MODULE_1__["pathElement"].getPointAtLength(enemies[i].step).y);
+    enemies[i].update(x, y);
+    enemies[i].move(); // Check if enemy reached the end of the map
+
+    if (enemies[i].step >= _Constants__WEBPACK_IMPORTED_MODULE_1__["pathElement"].getTotalLength()) {
+      health -= enemies[i].damage;
+      enemies.shift();
+      _Constants__WEBPACK_IMPORTED_MODULE_1__["healthLbl"].innerHTML = "Health: " + health;
+
+      if (health <= 0) {
+        alert('Game Over');
+      }
+    } // Sort enemies in descending order by how far along they are on the map
+
+
+    enemies.sort(function (a, b) {
+      return b.step - a.step;
+    });
+  }
 }
 
 function attack() {
@@ -480,43 +491,6 @@ function attack() {
   }
 }
 
-function moveEnemies() {
-  for (var i = 0; i < enemies.length; i++) {
-    var x = parseInt(_Constants__WEBPACK_IMPORTED_MODULE_1__["pathElement"].getPointAtLength(enemies[i].step).x);
-    var y = parseInt(_Constants__WEBPACK_IMPORTED_MODULE_1__["pathElement"].getPointAtLength(enemies[i].step).y);
-    enemies[i].update(x, y);
-    enemies[i].move();
-
-    if (enemies[i].step >= _Constants__WEBPACK_IMPORTED_MODULE_1__["pathElement"].getTotalLength()) {
-      health -= enemies[i].damage;
-      enemies.shift();
-      _Constants__WEBPACK_IMPORTED_MODULE_1__["healthLbl"].innerHTML = "Health: " + health;
-
-      if (health <= 0) {
-        alert('Game Over');
-      }
-    }
-
-    enemies.sort(function (a, b) {
-      return b.step - a.step;
-    });
-  }
-}
-
-function playRound() {
-  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
-  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
-  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
-  moveEnemies();
-  attack();
-
-  if (enemies.length === 0) {
-    endRound();
-  } else {
-    requestAnimationFrame(playRound);
-  }
-}
-
 function endRound() {
   running = false;
   cash += Object(_Rounds__WEBPACK_IMPORTED_MODULE_3__["getReward"])(round);
@@ -524,6 +498,41 @@ function endRound() {
   checkAfford();
   round++;
   _Constants__WEBPACK_IMPORTED_MODULE_1__["playBtn"].innerHTML = "Play Round " + round;
+}
+/*
+Drag and drop tower
+ */
+
+
+function placeTower(towerType) {
+  placing = true;
+  towers[towers.length] = new _towers_Tower__WEBPACK_IMPORTED_MODULE_0__["default"](towerType, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y);
+  cash -= towers[towers.length - 1].price;
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["cashLbl"].innerHTML = "$" + cash;
+  checkAfford(cash);
+  place();
+}
+
+function place() {
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
+  var tower = towers[towers.length - 1];
+
+  if (placing) {
+    requestAnimationFrame(place);
+    tower.update(_Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y);
+    Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowersFull"])(towers);
+  } else {
+    for (var i = 0; i < towers.length - 1; i++) {
+      if (Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getDistance"])(tower.x, tower.y, towers[i].x, towers[i].y) < tower.radius + towers[i].radius) {
+        placing = true;
+        requestAnimationFrame(place);
+      }
+    }
+
+    Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
+  }
+
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
 }
 
 function setNewMap() {

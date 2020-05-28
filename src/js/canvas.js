@@ -46,8 +46,8 @@ canvas.addEventListener('click', function() { placing = false; }, false);
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape' && placing) {
         placing = false;
-        towers.pop();
         cash += towers[towers.length - 1].price;
+        towers.pop();
         drawTowers(towers);
         drawPath();
     }
@@ -127,18 +127,25 @@ Drag and drop tower
 function placeTower(towerType) {
     placing = true;
     towers[towers.length] = new Tower(towerType, mouse.x, mouse.y);
+    cash -= towers[towers.length - 1].price;
+    cashLbl.innerHTML = "$" + cash;
+    checkAfford(cash);
     place();
 }
 function place() {
     clear();
+    let tower = towers[towers.length - 1];
     if (placing) {
         requestAnimationFrame(place);
-        towers[towers.length - 1].update(mouse.x, mouse.y);
+        tower.update(mouse.x, mouse.y);
         drawTowersFull(towers);
     } else {
-        cash -= towers[towers.length - 1].price;
-        cashLbl.innerHTML = "$" + cash;
-        checkAfford(cash);
+        for (let i = 0; i < towers.length - 1; i++) {
+            if (getDistance(tower.x, tower.y, towers[i].x, towers[i].y) < tower.radius + towers[i].radius) {
+                placing = true;
+                requestAnimationFrame(place);
+            }
+        }
         drawTowers(towers);
     }
     drawPath();
