@@ -25,14 +25,14 @@ export function drawCircleBorder(x, y, radius, color, width) {
 export function drawSquare(x, y, radius, color) {
     context.beginPath();
     context.fillStyle = color;
-    context.rect(x, y, radius * 2, radius * 2);
+    context.rect(x - radius, y - radius, radius * 2, radius * 2);
     context.fill();
     context.closePath();
 }
 
 export function drawSquareBorder(x, y, radius, color, width) {
     context.beginPath();
-    context.rect(x, y, radius * 2, radius * 2);
+    context.rect(x - radius, y - radius, radius * 2, radius * 2);
     context.lineWidth = width;
     context.strokeStyle = color;
     context.stroke();
@@ -108,7 +108,10 @@ export function drawTowersFull(towers) {
 
 export function drawAttack(towerX, towerY, enemyX, enemyY) {
     context.beginPath();
+    context.strokeStyle = '#000';
+    context.lineWidth = 1;
     context.moveTo(towerX, towerY);
     context.lineTo(enemyX, enemyY);
     context.stroke();
+    context.closePath();
 }

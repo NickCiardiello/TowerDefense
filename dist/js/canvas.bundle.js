@@ -180,13 +180,13 @@ function drawCircleBorder(x, y, radius, color, width) {
 function drawSquare(x, y, radius, color) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fillStyle = color;
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].rect(x, y, radius * 2, radius * 2);
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].rect(x - radius, y - radius, radius * 2, radius * 2);
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fill();
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].closePath();
 }
 function drawSquareBorder(x, y, radius, color, width) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].rect(x, y, radius * 2, radius * 2);
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].rect(x - radius, y - radius, radius * 2, radius * 2);
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].lineWidth = width;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].strokeStyle = color;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].stroke();
@@ -258,9 +258,12 @@ function drawTowersFull(towers) {
 }
 function drawAttack(towerX, towerY, enemyX, enemyY) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].strokeStyle = '#000';
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].lineWidth = 1;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].moveTo(towerX, towerY);
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].lineTo(enemyX, enemyY);
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].stroke();
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].closePath();
 }
 
 /***/ }),
@@ -327,11 +330,13 @@ function createEnemiesForRound(round) {
   switch (round) {
     case 1:
       // Start red circle immediately at default speed with armor and camo
-      enemies[0] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', 0, 1, 1, true); // Start yellow square with delay at default speed without camo or armor
-
-      enemies[1] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'yellow', -150, 1, 0, false); // Start yellow square with delay at 2x speed with armor and camo
-
-      enemies[2] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'yellow', -300, 2, 2, true);
+      // enemies[0] = new Enemy('circle', 'red', 0, 1, 1, true);
+      // Start yellow square with delay at default speed without camo or armor
+      // enemies[1] = new Enemy('square', 'yellow', -150, 1, 0, false);
+      // Start yellow square with delay at 2x speed with armor and camo
+      // enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
+      enemies[0] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', 0, 1, 0, false);
+      enemies[1] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', -100, 1, 3, false);
 
     default:
       break;
@@ -370,6 +375,13 @@ __webpack_require__.r(__webpack_exports__);
 var round = 1;
 var cash = 150;
 var health = 100;
+var devMode = true;
+
+if (devMode) {
+  cash = 1000000;
+  health = 100000;
+}
+
 var towers = [];
 var enemies = [];
 var placing = false;
@@ -539,7 +551,8 @@ var Enemy = /*#__PURE__*/function () {
     this.speedMultiplier = speedMultiplier;
     this.baseArmorHealth = 5;
     this.armorHealth = this.baseArmorHealth * armorMultiplier;
-    this.armorWidth = this.armorHealth / 5 * 2;
+    this.baseArmorWidth = 2;
+    this.armorWidth = this.armorHealth / 5 * this.baseArmorWidth;
     this.hasArmor = armorMultiplier > 0;
     this.x = 0;
     this.y = 0;
@@ -557,8 +570,7 @@ var Enemy = /*#__PURE__*/function () {
 
       case "square":
         this.baseHealth = 60;
-        this.baseSpeed = 1; // this.speedMultiplier *= 0.5
-
+        this.baseSpeed = 1;
         break;
 
       default:
@@ -604,7 +616,7 @@ var Enemy = /*#__PURE__*/function () {
     value: function hit(damageTaken) {
       if (this.hasArmor) {
         this.armorHealth -= damageTaken;
-        this.armorWidth = this.armorHealth / this.baseArmorHealth * this.armorWidth;
+        this.armorWidth = this.armorHealth / this.baseArmorHealth * this.baseArmorWidth;
 
         if (this.armorHealth <= 0) {
           this.hasArmor = false;

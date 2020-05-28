@@ -18,6 +18,11 @@ import { clear, drawPath, drawTowers, drawTowersFull, drawAttack } from "./Draw"
 let round = 1;
 let cash = 150;
 let health = 100;
+let devMode = true;
+if (devMode) {
+    cash = 1000000;
+    health = 100000;
+}
 let towers = [];
 let enemies = [];
 let placing = false;

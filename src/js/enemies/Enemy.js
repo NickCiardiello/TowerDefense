@@ -10,7 +10,8 @@ export default class Enemy {
         this.speedMultiplier = speedMultiplier;
         this.baseArmorHealth = 5;
         this.armorHealth = this.baseArmorHealth * armorMultiplier;
-        this.armorWidth = this.armorHealth / 5 * 2;
+        this.baseArmorWidth = 2;
+        this.armorWidth = this.armorHealth / 5 * this.baseArmorWidth;
         this.hasArmor = armorMultiplier > 0;
         this.x = 0;
         this.y = 0;
@@ -63,7 +64,7 @@ export default class Enemy {
     hit(damageTaken) {
         if (this.hasArmor) {
             this.armorHealth -= damageTaken;
-            this.armorWidth = this.armorHealth / this.baseArmorHealth * this.armorWidth;
+            this.armorWidth = this.armorHealth / this.baseArmorHealth * this.baseArmorWidth;
             if (this.armorHealth <= 0) {
                 this.hasArmor = false;
             }

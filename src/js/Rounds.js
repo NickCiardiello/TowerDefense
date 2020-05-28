@@ -5,11 +5,14 @@ export function createEnemiesForRound(round) {
     switch (round) {
         case 1:
             // Start red circle immediately at default speed with armor and camo
-            enemies[0] = new Enemy('circle', 'red', 0, 1, 1, true);
+            // enemies[0] = new Enemy('circle', 'red', 0, 1, 1, true);
             // Start yellow square with delay at default speed without camo or armor
-            enemies[1] = new Enemy('square', 'yellow', -150, 1, 0, false);
+            // enemies[1] = new Enemy('square', 'yellow', -150, 1, 0, false);
             // Start yellow square with delay at 2x speed with armor and camo
-            enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
+            // enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
+
+            enemies[0] = new Enemy('circle', 'red', 0, 1, 0, false);
+            enemies[1] = new Enemy('circle', 'red', -100, 1, 3, false);
         default:
             break;
     }
