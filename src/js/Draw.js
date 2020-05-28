@@ -15,7 +15,7 @@ export function drawCircle(x, y, radius, color) {
 
 export function drawCircleBorder(x, y, radius, color, width) {
     context.beginPath();
-    context.arc(x, y, radius + 5, 0, Math.PI * 2);
+    context.arc(x, y, radius, 0, Math.PI * 2);
     context.lineWidth = width;
     context.strokeStyle = color;
     context.stroke();
@@ -32,6 +32,7 @@ export function drawSquare(x, y, radius, color) {
 
 export function drawSquareBorder(x, y, radius, color, width) {
     context.beginPath();
+    context.rect(x, y, radius * 2, radius * 2);
     context.lineWidth = width;
     context.strokeStyle = color;
     context.stroke();
@@ -43,12 +44,18 @@ export function drawEnemy(enemy) {
         if (enemy.shape === 'circle') {
             drawCircle(enemy.x, enemy.y, enemy.radius, enemy.color);
             if (enemy.camo) {
-                drawCircleBorder(enemy.x, enemy.y, enemy.radius + 5, "lightgreen");
+                drawCircleBorder(enemy.x, enemy.y, enemy.radius + 10, "lightgreen", 2);
+            }
+            if (enemy.hasArmor) {
+                drawCircleBorder(enemy.x, enemy.y, enemy.radius, 'black', enemy.armorWidth);
             }
         } else if (enemy.shape === 'square') {
             drawSquare(enemy.x, enemy.y, enemy.radius, enemy.color);
             if (enemy.camo) {
-                drawSquareBorder(enemy.x, enemy.y, enemy.radius + 5, "lightgreen");
+                drawSquareBorder(enemy.x, enemy.y, enemy.radius + 10, "lightgreen", 2);
+            }
+            if (enemy.hasArmor) {
+                drawSquareBorder(enemy.x, enemy.y, enemy.radius, 'black', enemy.armorWidth);
             }
         }
     }

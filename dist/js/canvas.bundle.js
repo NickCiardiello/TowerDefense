@@ -171,7 +171,7 @@ function drawCircle(x, y, radius, color) {
 }
 function drawCircleBorder(x, y, radius, color, width) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].arc(x, y, radius + 5, 0, Math.PI * 2);
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].arc(x, y, radius, 0, Math.PI * 2);
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].lineWidth = width;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].strokeStyle = color;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].stroke();
@@ -186,6 +186,7 @@ function drawSquare(x, y, radius, color) {
 }
 function drawSquareBorder(x, y, radius, color, width) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].rect(x, y, radius * 2, radius * 2);
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].lineWidth = width;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].strokeStyle = color;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].stroke();
@@ -197,13 +198,21 @@ function drawEnemy(enemy) {
       drawCircle(enemy.x, enemy.y, enemy.radius, enemy.color);
 
       if (enemy.camo) {
-        drawCircleBorder(enemy.x, enemy.y, enemy.radius + 5, "lightgreen");
+        drawCircleBorder(enemy.x, enemy.y, enemy.radius + 10, "lightgreen", 2);
+      }
+
+      if (enemy.hasArmor) {
+        drawCircleBorder(enemy.x, enemy.y, enemy.radius, 'black', enemy.armorWidth);
       }
     } else if (enemy.shape === 'square') {
       drawSquare(enemy.x, enemy.y, enemy.radius, enemy.color);
 
       if (enemy.camo) {
-        drawSquareBorder(enemy.x, enemy.y, enemy.radius + 5, "lightgreen");
+        drawSquareBorder(enemy.x, enemy.y, enemy.radius + 10, "lightgreen", 2);
+      }
+
+      if (enemy.hasArmor) {
+        drawSquareBorder(enemy.x, enemy.y, enemy.radius, 'black', enemy.armorWidth);
       }
     }
   }
@@ -317,36 +326,12 @@ function createEnemiesForRound(round) {
 
   switch (round) {
     case 1:
-      enemies[0] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', 0, 1, 1, 0, true);
-      enemies[1] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'yellow', -150, 1, 1, 0, true);
-    // enemies[2] = new Enemy('square', 'red', -300, 1, 1, 0, true);
-    // enemies[3] = new Enemy('square', 'red', -450, 3, 2, 0, true);
-    // enemies[1] = new Enemy('circle', 'red', -500, 2, 0, false);
-    // enemies[2] = new Enemy('square', 'yellow', -1000, 1, 0, true);
-    // enemies[3] = new Enemy('square', 'yellow', -1500, 2, 0, false);
-    // case 1:
-    //     for (let i = 0; i < 6; i++) {
-    //         enemies[i] = new Circle('red', i * -150, 1, false);
-    //     }
-    //     break;
-    // case 2:
-    //     for (let i = 0; i < 10; i++) {
-    //         if (i % 2 === 0) {
-    //             enemies[i] = new Circle('yellow', i * -50, 1, false);
-    //         } else {
-    //             enemies[i] = new Square('gray', i * -50, 1);
-    //         }
-    //     }
-    //     break;
-    // case 3:
-    //     for (let i = 0; i < 3; i++ ) {
-    //         enemies[i] = new Circle('red', i * -150, 1, true);
-    //     }
-    //     break;
-    // case 4:
-    //     for (let i = 0; i < 100; i++) {
-    //         enemies[i] = new Circle('yellow', i * -50, 10, true);
-    //     }
+      // Start red circle immediately at default speed with armor and camo
+      enemies[0] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', 0, 1, 1, true); // Start yellow square with delay at default speed without camo or armor
+
+      enemies[1] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'yellow', -150, 1, 0, false); // Start yellow square with delay at 2x speed with armor and camo
+
+      enemies[2] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'yellow', -300, 2, 2, true);
 
     default:
       break;
@@ -355,14 +340,7 @@ function createEnemiesForRound(round) {
   return enemies;
 }
 function getReward(round) {
-  return 50; // switch(round) {
-  // case 1:
-  //     return 50;
-  // case 2:
-  //     return 50;
-  // default:
-  //     return 0;
-  // }
+  return 50;
 }
 
 /***/ }),
@@ -548,15 +526,21 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
- // Shape is health and speed multiplier, color is base speed
+ // Shape is health, color is base speed
 
 var Enemy = /*#__PURE__*/function () {
-  function Enemy(shape, color, step, speedMultiplier, healthMultiplier, armorMultiplier, camo) {
+  function Enemy(shape, color, step, speedMultiplier, armorMultiplier, camo) {
     _classCallCheck(this, Enemy);
 
     this.shape = shape;
     this.step = step;
+    this.baseSpeed = 0;
+    this.speed = 1;
     this.speedMultiplier = speedMultiplier;
+    this.baseArmorHealth = 5;
+    this.armorHealth = this.baseArmorHealth * armorMultiplier;
+    this.armorWidth = this.armorHealth / 5 * 2;
+    this.hasArmor = armorMultiplier > 0;
     this.x = 0;
     this.y = 0;
     this.alive = true;
@@ -564,35 +548,35 @@ var Enemy = /*#__PURE__*/function () {
     this.camo = camo;
     this.baseRadius = 20;
     this.radius = 20;
-    this.speed = 1;
 
     switch (shape) {
       case "circle":
-        this.baseHealth = 20 * healthMultiplier;
-        this.health = this.baseHealth;
+        this.baseHealth = 20;
+        this.baseSpeed = 3;
         break;
 
       case "square":
-        this.baseHealth = 60 * healthMultiplier;
-        this.health = this.baseHealth;
-        this.speedMultiplier *= 0.5;
+        this.baseHealth = 60;
+        this.baseSpeed = 1; // this.speedMultiplier *= 0.5
+
         break;
 
       default:
         this.baseHealth = 0;
-        this.health = this.baseHealth;
         break;
     }
 
+    this.health = this.baseHealth;
+
     switch (color) {
       case "red":
-        healthMultiplier > 1 ? this.color = 'darkred' : this.color = 'red';
-        this.speed = 3 * this.speedMultiplier;
+        this.color = 'red';
+        this.speed = this.baseSpeed * this.speedMultiplier;
         break;
 
       case "yellow":
-        healthMultiplier > 1 ? this.color = 'khaki' : this.color = 'yellow';
-        this.speed = 5 * this.speedMultiplier;
+        this.color = 'yellow';
+        this.speed = this.baseSpeed * this.speedMultiplier;
         break;
 
       default:
@@ -606,21 +590,7 @@ var Enemy = /*#__PURE__*/function () {
   _createClass(Enemy, [{
     key: "move",
     value: function move() {
-      Object(_Draw__WEBPACK_IMPORTED_MODULE_0__["drawEnemy"])(this); // context.beginPath();
-      // context.fillStyle = this.color;
-      // context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
-      // context.fill();
-      // if (this.camo) {
-      //     context.lineWidth = 5;
-      //     context.strokeStyle = 'gray';
-      //     context.stroke();
-      // }
-      // if (this.armorMultipler > 1) {
-      //     context.lineWidth = 5;
-      //     context.strokeStyle = "black";
-      //     context.stroke();
-      // }
-      // context.closePath();
+      Object(_Draw__WEBPACK_IMPORTED_MODULE_0__["drawEnemy"])(this);
     }
   }, {
     key: "update",
@@ -632,13 +602,20 @@ var Enemy = /*#__PURE__*/function () {
   }, {
     key: "hit",
     value: function hit(damageTaken) {
-      // damageTaken /= this.armorMultipler;
-      // this.radius -= damageTaken
-      this.health -= damageTaken;
-      this.radius = this.health / this.baseHealth * this.baseRadius;
+      if (this.hasArmor) {
+        this.armorHealth -= damageTaken;
+        this.armorWidth = this.armorHealth / this.baseArmorHealth * this.armorWidth;
 
-      if (this.radius <= 0) {
-        this.alive = false;
+        if (this.armorHealth <= 0) {
+          this.hasArmor = false;
+        }
+      } else {
+        this.health -= damageTaken;
+        this.radius = this.health / this.baseHealth * this.baseRadius;
+
+        if (this.radius <= 0) {
+          this.alive = false;
+        }
       }
     }
   }]);

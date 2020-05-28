@@ -1,11 +1,17 @@
 import {drawEnemy} from "../Draw";
 
-// Shape is health and speed multiplier, color is base speed
+// Shape is health, color is base speed
 export default class Enemy {
-    constructor(shape, color, step, speedMultiplier, healthMultiplier, armorMultiplier, camo) {
+    constructor(shape, color, step, speedMultiplier, armorMultiplier, camo) {
         this.shape = shape;
         this.step = step;
+        this.baseSpeed = 0;
+        this.speed = 1;
         this.speedMultiplier = speedMultiplier;
+        this.baseArmorHealth = 5;
+        this.armorHealth = this.baseArmorHealth * armorMultiplier;
+        this.armorWidth = this.armorHealth / 5 * 2;
+        this.hasArmor = armorMultiplier > 0;
         this.x = 0;
         this.y = 0;
         this.alive = true;
@@ -13,30 +19,28 @@ export default class Enemy {
         this.camo = camo;
         this.baseRadius = 20;
         this.radius = 20;
-        this.speed = 1;
         switch (shape) {
             case "circle":
-                this.baseHealth = 20 * healthMultiplier;
-                this.health = this.baseHealth;
+                this.baseHealth = 20;
+                this.baseSpeed = 3;
                 break;
             case "square":
-                this.baseHealth = 60 * healthMultiplier;
-                this.health = this.baseHealth;
-                this.speedMultiplier *= 0.5
+                this.baseHealth = 60;
+                this.baseSpeed = 1
                 break;
             default:
                 this.baseHealth = 0;
-                this.health = this.baseHealth;
                 break;
         }
+        this.health = this.baseHealth;
         switch (color) {
             case "red":
-                healthMultiplier > 1 ? this.color = 'darkred' : this.color = 'red';
-                this.speed = 3 * this.speedMultiplier;
+                this.color = 'red';
+                this.speed = this.baseSpeed * this.speedMultiplier;
                 break;
             case "yellow":
-                healthMultiplier > 1 ? this.color = 'khaki' : this.color = 'yellow';
-                this.speed = 5 * this.speedMultiplier;
+                this.color = 'yellow';
+                this.speed = this.baseSpeed * this.speedMultiplier;
                 break;
             default:
                 this.color = 'black';
@@ -57,10 +61,18 @@ export default class Enemy {
     }
 
     hit(damageTaken) {
-        this.health -= damageTaken;
-        this.radius = this.health / this.baseHealth * this.baseRadius;
-        if (this.radius <= 0) {
-            this.alive = false;
+        if (this.hasArmor) {
+            this.armorHealth -= damageTaken;
+            this.armorWidth = this.armorHealth / this.baseArmorHealth * this.armorWidth;
+            if (this.armorHealth <= 0) {
+                this.hasArmor = false;
+            }
+        } else {
+            this.health -= damageTaken;
+            this.radius = this.health / this.baseHealth * this.baseRadius;
+            if (this.radius <= 0) {
+                this.alive = false;
+            }
         }
     }
 }
