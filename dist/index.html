@@ -9,7 +9,7 @@
         }
         .center {
             margin: auto;
-            width: 30%;
+            width: 40%;
         }
         canvas {
             padding: 0;
@@ -29,14 +29,16 @@
 <div class="center">
     <button id="playBtn" type="button" class="btn btn-primary">Play Round 1</button>
     <select id="mapDropdown">
-        <option value="1" selected="selected">backwardsCMap</option>
+        <option value="1" selected="selected">sinMap</option>
         <option value="2">sMap</option>
+        <option value="3">backwardsCMap</option>
     </select>
     <button id="placeBasicTowerBtn" class="btn btn-primary">Place Basic Tower ($100)</button>
     <button id="placeSniperTowerBtn" class="btn btn-primary">Place Sniper Tower ($150)</button>
+    <button id="placeSentryTowerBtn" class="btn btn-primary">Place Sentry Tower ($100)</button>
 </div>
 <div>
-    <p id="cashLbl">$0</p>
+    <p id="cashLbl">$150</p>
     <p id="healthLbl">Health: 100</p>
 </div>
 <div>

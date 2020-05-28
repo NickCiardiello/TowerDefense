@@ -1,16 +1,18 @@
+import { context } from '../Constants';
 export default class Circle {
-    constructor(context, color) {
-        this.context = context;
-        this.step = 0;
+    constructor(color, step, armorMultiplier, isCamo) {
+        this.step = step;
         this.x = 0;
         this.y = 0;
         this.alive = true;
         this.damage = 10;
+        this.armorMultipler = armorMultiplier;
+        this.camo = isCamo;
         switch (color) {
-            case "blue":
-                this.radius = 50;
-                this.speed = 5;
-                this.color = 'blue';
+            case "red":
+                this.radius = 20;
+                this.speed = 3;
+                this.color = 'red';
                 break;
             case "yellow":
                 this.radius = 30;
@@ -25,11 +27,21 @@ export default class Circle {
     }
 
     move() {
-        this.context.beginPath();
-        this.context.fillStyle = this.color;
-        this.context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
-        this.context.fill();
-        this.context.closePath();
+        context.beginPath();
+        context.fillStyle = this.color;
+        context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+        context.fill();
+        if (this.camo) {
+            context.lineWidth = 5;
+            context.strokeStyle = 'gray';
+            context.stroke();
+        }
+        if (this.armorMultipler > 1) {
+            context.lineWidth = 5;
+            context.strokeStyle = "black";
+            context.stroke();
+        }
+        context.closePath();
     }
 
     update(x, y) {
@@ -39,6 +51,7 @@ export default class Circle {
     }
 
     hit(damageTaken) {
+        damageTaken /= this.armorMultipler;
         this.radius -= damageTaken
         if (this.radius <= 0) {
             this.alive = false;

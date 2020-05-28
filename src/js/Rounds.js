@@ -1,19 +1,27 @@
 import Circle from "./enemies/Circle";
 import Square from "./enemies/Squares";
 
-export function createEnemiesForRound(context, round) {
+export function createEnemiesForRound(round) {
     let enemies = [];
     switch (round) {
         case 1:
-            enemies[0] = new Square(context, 'red');
-            enemies[1] = new Square(context, 'gray');
-            enemies[2] = new Circle(context, 'blue');
-            enemies[3] = new Circle(context, 'yellow');
+            for (let i = 0; i < 6; i++) {
+                enemies[i] = new Circle('red', i * -150, 1, false);
+            }
             break;
         case 2:
-            enemies[0] = new Circle(context, 'blue');
-            enemies[1] = new Circle(context, 'yellow');
+            for (let i = 0; i < 10; i++) {
+                if (i % 2 === 0) {
+                    enemies[i] = new Circle('yellow', i * -50, 1, false);
+                } else {
+                    enemies[i] = new Square('gray', i * -50, 1);
+                }
+            }
             break;
+        case 3:
+            for (let i = 0; i < 3; i++ ) {
+                enemies[i] = new Circle('red', i * -150, 1, true);
+            }
         default:
             break;
     }
@@ -21,13 +29,14 @@ export function createEnemiesForRound(context, round) {
 }
 
 export function getReward(round) {
-    switch(round) {
-        case 1:
-            return 50;
-        case 2:
-            return 50;
-        default:
-            return 0;
-    }
+    return 50;
+    // switch(round) {
+        // case 1:
+        //     return 50;
+        // case 2:
+        //     return 50;
+        // default:
+        //     return 0;
+    // }
 }
 
