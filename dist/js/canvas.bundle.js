@@ -244,6 +244,10 @@ function drawPath() {
 }
 function drawTowers(towers) {
   for (var i = 0; i < towers.length; i++) {
+    if (towers[i].isSelected) {
+      towers[i].drawTowerRange();
+    }
+
     towers[i].drawTower();
   }
 }
@@ -412,9 +416,17 @@ _Constants__WEBPACK_IMPORTED_MODULE_1__["placeSentryTowerBtn"].addEventListener(
   placeTower('SentryTower');
 }, false);
 _Constants__WEBPACK_IMPORTED_MODULE_1__["canvas"].addEventListener('click', function () {
-  placing = false;
-}, false); // canvas.addEventListener('click', function() { placing = false; }, false);
-
+  if (placing) {
+    placing = false;
+  } else {
+    for (var i = 0; i < towers.length; i++) {
+      towers[i].isSelected = Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getDistance"])(_Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y, towers[i].x, towers[i].y) < towers[i].radius;
+      Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
+      Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
+      Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
+    }
+  }
+}, false);
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape' && placing) {
     placing = false;
@@ -687,94 +699,45 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var Tower = /*#__PURE__*/function () {
-  _createClass(Tower, [{
-    key: "armorPiercing",
-    get: function get() {
-      return this._armorPiercing;
-    },
-    set: function set(value) {
-      this._armorPiercing = value;
-    }
-  }, {
-    key: "detectCamo",
-    get: function get() {
-      return this._detectCamo;
-    },
-    set: function set(value) {
-      this._detectCamo = value;
-    }
-  }, {
-    key: "damage",
-    get: function get() {
-      return this._damage;
-    },
-    set: function set(value) {
-      this._damage = value;
-    }
-  }, {
-    key: "rangeRadius",
-    get: function get() {
-      return this._rangeRadius;
-    },
-    set: function set(value) {
-      this._rangeRadius = value;
-    }
-  }, {
-    key: "y",
-    get: function get() {
-      return this._y;
-    },
-    set: function set(value) {
-      this._y = value;
-    }
-  }, {
-    key: "x",
-    get: function get() {
-      return this._x;
-    },
-    set: function set(value) {
-      this._x = value;
-    }
-  }]);
-
   function Tower(towerType, x, y) {
     _classCallCheck(this, Tower);
 
-    this._x = x;
-    this._y = y;
+    this.x = x;
+    this.y = y;
     this.radius = 25;
-    this._rangeRadius = 25;
-    this._damage = 0;
-    this._detectCamo = false;
-    this._armorPiercing = false;
+    this.rangeRadius = 25;
+    this.damage = 0;
+    this.detectCamo = false;
+    this.armorPiercing = false;
+    this.isSelected = false;
 
     switch (towerType) {
       case "BasicTower":
-        this._rangeRadius = 125;
+        this.rangeRadius = 125;
         this.color = '#964b00';
-        this._damage = 0.5;
+        this.damage = 0.5;
         this.price = 100;
         break;
 
       case "SniperTower":
-        this._rangeRadius = 500;
+        this.rangeRadius = 300;
         this.color = '#00ff00';
-        this._damage = 0.25;
+        this.damage = 0.25;
         this.price = 150;
         break;
 
       case "SentryTower":
-        this._rangeRadius = 75;
+        this.rangeRadius = 75;
         this.color = '#228b22';
-        this._damage = 0.25;
+        this.damage = 0.25;
         this.price = 100;
-        this._detectCamo = true;
+        this.detectCamo = true;
         break;
 
       default:
-        this._rangeRadius = 0;
+        this.rangeRadius = 0;
         this.color = '#000';
-        this._damage = 0;
+        this.damage = 0;
         break;
     }
   }
@@ -792,8 +755,8 @@ var Tower = /*#__PURE__*/function () {
   }, {
     key: "update",
     value: function update(x, y) {
-      this._x = x;
-      this._y = y;
+      this.x = x;
+      this.y = y;
     }
   }]);
 

@@ -36,13 +36,23 @@ Init
 setMap('');
 checkAfford(cash);
 drawPath();
-
 playBtn.addEventListener ("click", run, false);
 mapDropdown.addEventListener ("change", function() { setNewMap() }, false);
 placeBasicTowerBtn.addEventListener ("click", function() { placeTower('BasicTower') }, false);
 placeSniperTowerBtn.addEventListener ("click", function() { placeTower('SniperTower') }, false);
 placeSentryTowerBtn.addEventListener ("click", function() { placeTower('SentryTower') }, false);
-canvas.addEventListener('click', function() { placing = false; }, false);
+canvas.addEventListener('click', function() {
+    if (placing) {
+        placing = false;
+    } else {
+        for (let i = 0; i < towers.length; i++) {
+            towers[i].isSelected = getDistance(mouse.x, mouse.y, towers[i].x, towers[i].y) < towers[i].radius;
+            clear();
+            drawTowers(towers);
+            drawPath();
+        }
+
+    }}, false);
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape' && placing) {
         placing = false;

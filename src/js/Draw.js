@@ -93,6 +93,9 @@ export function drawPath() {
 
 export function drawTowers(towers) {
     for (let i = 0; i < towers.length; i++) {
+        if (towers[i].isSelected) {
+            towers[i].drawTowerRange();
+        }
         towers[i].drawTower();
     }
 }

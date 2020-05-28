@@ -9,6 +9,7 @@ export default class Tower {
         this.damage = 0;
         this.detectCamo = false;
         this.armorPiercing = false;
+        this.isSelected = false;
         switch(towerType) {
             case "BasicTower":
                 this.rangeRadius = 125;
