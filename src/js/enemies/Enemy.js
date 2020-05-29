@@ -61,6 +61,7 @@ export default class Enemy {
         this.step += this.speed;
     }
 
+
     hit(damageTaken) {
         if (this.hasArmor) {
             this.armorHealth -= damageTaken;

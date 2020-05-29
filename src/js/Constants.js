@@ -1,4 +1,6 @@
 // Canvas + Context
+import {Fng} from "./towers/Fng";
+
 export const canvas = document.querySelector('canvas');
 canvas.width = 800;
 canvas.height = 800;
@@ -19,10 +21,15 @@ addEventListener('mousemove', (event) => {
 export const pathElement = document.createElementNS('http://www.w3.org/2000/svg',"path");
 export const playBtn = document.getElementById ("playBtn");
 export const mapDropdown = document.getElementById ("mapDropdown");
-export const placeBasicTowerBtn = document.getElementById ("placeBasicTowerBtn");
-export const placeSniperTowerBtn = document.getElementById ("placeSniperTowerBtn");
-export const placeSentryTowerBtn = document.getElementById ("placeSentryTowerBtn");
+export const placeFngBtn = document.getElementById ("placeFngBtn");
+export const placeMarksmanBtn = document.getElementById ("placeMarksmanBtn");
+export const placeGunsmithBtn = document.getElementById ("placeGunsmithBtn");
 export const upgradeBtn = document.getElementById ("upgradeBtn");
 export const cashLbl = document.getElementById('cashLbl');
 export const healthLbl = document.getElementById('healthLbl');
 
+export const TowerType = {
+    FNG: 'Fng',
+    MARKSMAN: 'Marksman',
+    GUNSMITH: 'Gunsmith'
+};

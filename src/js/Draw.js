@@ -7,7 +7,9 @@ export function clear() {
 
 export function drawCircle(x, y, radius, color) {
     context.beginPath();
-    context.arc(x, y, radius, 0, Math.PI * 2);
+    if (radius > 0) {
+        context.arc(x, y, radius, 0, Math.PI * 2);
+    }
     context.fillStyle = color;
     context.fill();
     context.closePath();
@@ -15,7 +17,9 @@ export function drawCircle(x, y, radius, color) {
 
 export function drawCircleBorder(x, y, radius, color, width) {
     context.beginPath();
-    context.arc(x, y, radius, 0, Math.PI * 2);
+    if (radius > 0) {
+        context.arc(x, y, radius, 0, Math.PI * 2);
+    }
     context.lineWidth = width;
     context.strokeStyle = color;
     context.stroke();
@@ -25,14 +29,18 @@ export function drawCircleBorder(x, y, radius, color, width) {
 export function drawSquare(x, y, radius, color) {
     context.beginPath();
     context.fillStyle = color;
-    context.rect(x - radius, y - radius, radius * 2, radius * 2);
+    if (radius > 0) {
+        context.rect(x - radius, y - radius, radius * 2, radius * 2);
+    }
     context.fill();
     context.closePath();
 }
 
 export function drawSquareBorder(x, y, radius, color, width) {
     context.beginPath();
-    context.rect(x - radius, y - radius, radius * 2, radius * 2);
+    if (radius > 0) {
+        context.rect(x - radius, y - radius, radius * 2, radius * 2);
+    }
     context.lineWidth = width;
     context.strokeStyle = color;
     context.stroke();

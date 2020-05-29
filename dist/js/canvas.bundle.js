@@ -90,7 +90,7 @@
 /*!*****************************!*\
   !*** ./src/js/Constants.js ***!
   \*****************************/
-/*! exports provided: canvas, context, mouse, pathElement, playBtn, mapDropdown, placeBasicTowerBtn, placeSniperTowerBtn, placeSentryTowerBtn, upgradeBtn, cashLbl, healthLbl */
+/*! exports provided: canvas, context, mouse, pathElement, playBtn, mapDropdown, placeFngBtn, placeMarksmanBtn, placeGunsmithBtn, upgradeBtn, cashLbl, healthLbl, TowerType */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -101,13 +101,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pathElement", function() { return pathElement; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "playBtn", function() { return playBtn; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapDropdown", function() { return mapDropdown; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "placeBasicTowerBtn", function() { return placeBasicTowerBtn; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "placeSniperTowerBtn", function() { return placeSniperTowerBtn; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "placeSentryTowerBtn", function() { return placeSentryTowerBtn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "placeFngBtn", function() { return placeFngBtn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "placeMarksmanBtn", function() { return placeMarksmanBtn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "placeGunsmithBtn", function() { return placeGunsmithBtn; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "upgradeBtn", function() { return upgradeBtn; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cashLbl", function() { return cashLbl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "healthLbl", function() { return healthLbl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TowerType", function() { return TowerType; });
+/* harmony import */ var _towers_Fng__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./towers/Fng */ "./src/js/towers/Fng.js");
 // Canvas + Context
+
 var canvas = document.querySelector('canvas');
 canvas.width = 800;
 canvas.height = 800;
@@ -126,12 +129,18 @@ addEventListener('mousemove', function (event) {
 var pathElement = document.createElementNS('http://www.w3.org/2000/svg', "path");
 var playBtn = document.getElementById("playBtn");
 var mapDropdown = document.getElementById("mapDropdown");
-var placeBasicTowerBtn = document.getElementById("placeBasicTowerBtn");
-var placeSniperTowerBtn = document.getElementById("placeSniperTowerBtn");
-var placeSentryTowerBtn = document.getElementById("placeSentryTowerBtn");
+var placeFngBtn = document.getElementById("placeFngBtn");
+var placeMarksmanBtn = document.getElementById("placeMarksmanBtn");
+var placeGunsmithBtn = document.getElementById("placeGunsmithBtn");
 var upgradeBtn = document.getElementById("upgradeBtn");
 var cashLbl = document.getElementById('cashLbl');
 var healthLbl = document.getElementById('healthLbl');
+var TowerType = {
+  // FNGTOWER: 'Fng',
+  FNG: 'Fng',
+  MARKSMAN: 'Marksman',
+  GUNSMITH: 'Gunsmith'
+};
 
 /***/ }),
 
@@ -166,14 +175,22 @@ function clear() {
 }
 function drawCircle(x, y, radius, color) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].arc(x, y, radius, 0, Math.PI * 2);
+
+  if (radius > 0) {
+    _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].arc(x, y, radius, 0, Math.PI * 2);
+  }
+
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fillStyle = color;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fill();
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].closePath();
 }
 function drawCircleBorder(x, y, radius, color, width) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].arc(x, y, radius, 0, Math.PI * 2);
+
+  if (radius > 0) {
+    _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].arc(x, y, radius, 0, Math.PI * 2);
+  }
+
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].lineWidth = width;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].strokeStyle = color;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].stroke();
@@ -182,13 +199,21 @@ function drawCircleBorder(x, y, radius, color, width) {
 function drawSquare(x, y, radius, color) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fillStyle = color;
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].rect(x - radius, y - radius, radius * 2, radius * 2);
+
+  if (radius > 0) {
+    _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].rect(x - radius, y - radius, radius * 2, radius * 2);
+  }
+
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fill();
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].closePath();
 }
 function drawSquareBorder(x, y, radius, color, width) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].rect(x - radius, y - radius, radius * 2, radius * 2);
+
+  if (radius > 0) {
+    _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].rect(x - radius, y - radius, radius * 2, radius * 2);
+  }
+
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].lineWidth = width;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].strokeStyle = color;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].stroke();
@@ -344,7 +369,7 @@ function createEnemiesForRound(round) {
       // Start yellow square with delay at 2x speed with armor and camo
       // enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
       for (var i = 0; i < 5; i++) {
-        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', i * -100, 1, 0, false);
+        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', i * -75, 1, 0, false);
       }
 
       break;
@@ -376,6 +401,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Rounds__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Rounds */ "./src/js/Rounds.js");
 /* harmony import */ var _Maps__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Maps */ "./src/js/Maps.js");
 /* harmony import */ var _Draw__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Draw */ "./src/js/Draw.js");
+/* harmony import */ var _towers_Fng__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./towers/Fng */ "./src/js/towers/Fng.js");
+/* harmony import */ var _towers_Marksman__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./towers/Marksman */ "./src/js/towers/Marksman.js");
+/* harmony import */ var _towers_Gunsmith__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./towers/Gunsmith */ "./src/js/towers/Gunsmith.js");
+
+
+
 
 
 
@@ -411,14 +442,14 @@ _Constants__WEBPACK_IMPORTED_MODULE_1__["playBtn"].addEventListener("click", run
 _Constants__WEBPACK_IMPORTED_MODULE_1__["mapDropdown"].addEventListener("change", function () {
   setNewMap();
 }, false);
-_Constants__WEBPACK_IMPORTED_MODULE_1__["placeBasicTowerBtn"].addEventListener("click", function () {
-  placeTower('BasicTower');
+_Constants__WEBPACK_IMPORTED_MODULE_1__["placeFngBtn"].addEventListener("click", function () {
+  placeTower(_Constants__WEBPACK_IMPORTED_MODULE_1__["TowerType"].FNG);
 }, false);
-_Constants__WEBPACK_IMPORTED_MODULE_1__["placeSniperTowerBtn"].addEventListener("click", function () {
-  placeTower('SniperTower');
+_Constants__WEBPACK_IMPORTED_MODULE_1__["placeMarksmanBtn"].addEventListener("click", function () {
+  placeTower(_Constants__WEBPACK_IMPORTED_MODULE_1__["TowerType"].MARKSMAN);
 }, false);
-_Constants__WEBPACK_IMPORTED_MODULE_1__["placeSentryTowerBtn"].addEventListener("click", function () {
-  placeTower('SentryTower');
+_Constants__WEBPACK_IMPORTED_MODULE_1__["placeGunsmithBtn"].addEventListener("click", function () {
+  placeTower(_Constants__WEBPACK_IMPORTED_MODULE_1__["TowerType"].GUNSMITH);
 }, false);
 _Constants__WEBPACK_IMPORTED_MODULE_1__["upgradeBtn"].addEventListener("click", function () {
   upgrade();
@@ -501,13 +532,17 @@ function moveEnemies() {
 
 function attack() {
   for (var i = 0; i < towers.length; i++) {
-    console.log(towers[i].numTargets);
     var numTargets = towers[i].numTargets;
 
     for (var j = 0; j < enemies.length; j++) {
-      if (Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getDistance"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius && enemies[i].step >= 0 && (!enemies[i].camo || enemies[i].camo && towers[i].detectCamo)) {
-        Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawAttack"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
-        enemies[j].hit(towers[i].damage);
+      if (towers[i].canHit(enemies[j])) {
+        // if (getDistance(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius &&
+        //     towers[i].canHit(enemies[j])) {
+        // enemies[i].step >= 0 &&
+        // (!enemies[i].camo || (enemies[i].camo && towers[i].detectCamo))) {
+        Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawAttack"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y); // enemies[j].hit(towers[i].damage);
+
+        towers[i].hit(enemies[i]);
         numTargets--;
 
         if (!enemies[j].alive) {
@@ -531,6 +566,9 @@ function endRound() {
   checkAfford();
   round++;
   _Constants__WEBPACK_IMPORTED_MODULE_1__["playBtn"].innerHTML = "Play Round " + round;
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["clear"])();
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawTowers"])(towers);
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_5__["drawPath"])();
 }
 /*
 Drag and drop tower
@@ -539,7 +577,23 @@ Drag and drop tower
 
 function placeTower(towerType) {
   placing = true;
-  towers[towers.length] = new _towers_Tower__WEBPACK_IMPORTED_MODULE_0__["default"](towerType, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y);
+  var tower;
+
+  switch (towerType) {
+    case _Constants__WEBPACK_IMPORTED_MODULE_1__["TowerType"].FNG:
+      // towers[towers.length] = new Fng(mouse.x, mouse.y);
+      tower = new _towers_Fng__WEBPACK_IMPORTED_MODULE_6__["Fng"](_Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y);
+      break;
+
+    case _Constants__WEBPACK_IMPORTED_MODULE_1__["TowerType"].MARKSMAN:
+      tower = new _towers_Marksman__WEBPACK_IMPORTED_MODULE_7__["Marksman"](_Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y);
+      break;
+
+    case _Constants__WEBPACK_IMPORTED_MODULE_1__["TowerType"].GUNSMITH:
+      tower = new _towers_Gunsmith__WEBPACK_IMPORTED_MODULE_8__["Gunsmith"](_Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_1__["mouse"].y);
+  }
+
+  towers[towers.length] = tower;
   cash -= towers[towers.length - 1].price;
   _Constants__WEBPACK_IMPORTED_MODULE_1__["cashLbl"].innerHTML = "$" + cash;
   checkAfford(cash);
@@ -575,9 +629,9 @@ function setNewMap() {
 }
 
 function checkAfford() {
-  _Constants__WEBPACK_IMPORTED_MODULE_1__["placeBasicTowerBtn"].disabled = cash < 100;
-  _Constants__WEBPACK_IMPORTED_MODULE_1__["placeSentryTowerBtn"].disabled = cash < 100;
-  _Constants__WEBPACK_IMPORTED_MODULE_1__["placeSniperTowerBtn"].disabled = cash < 150;
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["placeFngBtn"].disabled = cash < 100;
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["placeMarksmanBtn"].disabled = cash < 100;
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["placeGunsmithBtn"].disabled = cash < 150;
 }
 
 function upgrade() {
@@ -586,10 +640,8 @@ function upgrade() {
 }
 
 function checkUpgrade() {
-  if (cash >= selectedTower.getUpgradePrice()) {
-    _Constants__WEBPACK_IMPORTED_MODULE_1__["upgradeBtn"].disabled = false;
-    _Constants__WEBPACK_IMPORTED_MODULE_1__["upgradeBtn"].innerText = selectedTower.getUpgradeText();
-  }
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["upgradeBtn"].innerText = selectedTower.getUpgradeText() + ' ($' + selectedTower.getUpgradePrice() + ')';
+  _Constants__WEBPACK_IMPORTED_MODULE_1__["upgradeBtn"].disabled = selectedTower.rank >= 3 || cash <= selectedTower.getUpgradePrice();
 }
 
 /***/ }),
@@ -709,6 +761,511 @@ var Enemy = /*#__PURE__*/function () {
 }();
 
 
+
+/***/ }),
+
+/***/ "./src/js/towers/AbstractTower.js":
+/*!****************************************!*\
+  !*** ./src/js/towers/AbstractTower.js ***!
+  \****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractTower; });
+/* harmony import */ var _Draw__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Draw */ "./src/js/Draw.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils */ "./src/js/utils.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+var AbstractTower = /*#__PURE__*/function () {
+  function AbstractTower() {
+    _classCallCheck(this, AbstractTower);
+
+    _defineProperty(this, "x", 0);
+
+    _defineProperty(this, "y", 0);
+
+    _defineProperty(this, "radius", 15);
+
+    _defineProperty(this, "rangeRadius", 0);
+
+    _defineProperty(this, "color", '#fff');
+
+    _defineProperty(this, "damage", 0);
+
+    _defineProperty(this, "numTargets", 1);
+
+    _defineProperty(this, "rank", 1);
+
+    _defineProperty(this, "detectCamo", false);
+
+    _defineProperty(this, "armorPiercing", false);
+
+    _defineProperty(this, "isSelected", false);
+  }
+
+  _createClass(AbstractTower, [{
+    key: "drawTower",
+    value: function drawTower() {
+      Object(_Draw__WEBPACK_IMPORTED_MODULE_0__["drawTower"])(this);
+    }
+  }, {
+    key: "drawTowerRange",
+    value: function drawTowerRange() {
+      Object(_Draw__WEBPACK_IMPORTED_MODULE_0__["drawTowerRange"])(this);
+    }
+  }, {
+    key: "update",
+    value: function update(x, y) {
+      this.x = x;
+      this.y = y;
+    }
+  }, {
+    key: "canHit",
+    value: function canHit(enemy) {
+      return Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getDistance"])(this.x, this.y, enemy.x, enemy.y) < this.rangeRadius && enemy.step >= 0;
+    }
+  }, {
+    key: "hit",
+    value: function hit(enemy) {
+      if (enemy.hasArmor) {
+        enemy.armorHealth -= this.damage *= this.armorPiercing ? 2 : 0.5;
+        enemy.armorWidth = enemy.armorWidth / enemy.baseArmorHealth * enemy.baseArmorWidth;
+
+        if (enemy.armorHealth <= 0) {
+          enemy.hasArmor = false;
+        }
+      } else {
+        enemy.health -= this.damage;
+        enemy.radius = enemy.health / enemy.baseHealth * enemy.baseRadius;
+
+        if (enemy.radius <= 0) {
+          enemy.alive = false;
+        }
+      }
+    }
+  }, {
+    key: "getUpgradePrice",
+    value: function getUpgradePrice(rank2Price, rank3Price) {
+      switch (this.rank) {
+        case 1:
+          return rank2Price;
+
+        case 2:
+          return rank3Price;
+
+        default:
+          return "";
+      }
+    }
+  }, {
+    key: "getUpgradeText",
+    value: function getUpgradeText(rank2Upgrade, rank3Upgrade) {
+      switch (this.rank) {
+        case 1:
+          return rank2Upgrade;
+
+        case 2:
+          return rank3Upgrade;
+
+        default:
+          return "Fully Upgraded";
+      } // switch (this.towerType) {
+      //     case 'BasicTower':
+      //         if (this.rank === 1) {
+      //             return "Dual Wield";
+      //         } else if (this.rank === 2) {
+      //             return "Increase Attack";
+      //         }
+      //         this.rank++;
+      //         break;
+      //     case 'SniperTower':
+      //         if (this.rank === 1) {
+      //             return "Camo Detection";
+      //         } else if (this.rank === 2) {
+      //             return "Armor Piercing Rounds";
+      //         }
+      //     default:
+      //         return 'Fully upgraded';
+      // }
+
+    }
+  }, {
+    key: "upgrade",
+    value: function upgrade() {
+      this.rank++; // switch (this.towerType) {
+      //     case 'BasicTower':
+      //         if (this.rank === 1) {
+      //             this.numTargets++;
+      //         } else if (this.rank === 2) {
+      //             this.damage *= 2;
+      //         }
+      //         break;
+      //     case 'SniperTower':
+      //         if (this.rank === 1) {
+      //             this.detectCamo = true;
+      //         } else if (this.rank === 2) {
+      //             this.armorPiercing = true;
+      //         }
+      //         break;
+      //     default:
+      //         break;
+      // }
+      // this.rank++;
+    }
+  }]);
+
+  return AbstractTower;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/js/towers/Fng.js":
+/*!******************************!*\
+  !*** ./src/js/towers/Fng.js ***!
+  \******************************/
+/*! exports provided: Fng */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Fng", function() { return Fng; });
+/* harmony import */ var _AbstractTower__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractTower */ "./src/js/towers/AbstractTower.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+var Fng = /*#__PURE__*/function (_AbstractTower) {
+  _inherits(Fng, _AbstractTower);
+
+  var _super = _createSuper(Fng);
+
+  function Fng(x, y) {
+    var _this;
+
+    _classCallCheck(this, Fng);
+
+    _this = _super.call(this);
+    _this.x = x;
+    _this.y = y;
+    _this.rangeRadius = 125;
+    _this.color = '#964b00';
+    _this.damage = 0.5;
+    _this.price = 100;
+    return _this;
+  }
+
+  _createClass(Fng, [{
+    key: "canHit",
+    value: function canHit(enemy) {
+      return _get(_getPrototypeOf(Fng.prototype), "canHit", this).call(this, enemy) && (!enemy.camo || this.detectCamo);
+    } // hit(enemy) {
+    //     if (enemy.hasArmor) {
+    //         enemy.armorHealth -= this.damage / 2;
+    //         enemy.armorWidth = enemy.armorWidth / enemy.baseArmorHealth * enemy.baseArmorWidth;
+    //         if (enemy.armorHealth <= 0) {
+    //             enemy.hasArmor = false;
+    //         }
+    //     } else {
+    //         enemy.health -= this.damage;
+    //         enemy.radius = enemy.health / enemy.baseHealth * enemy.baseRadius;
+    //         if (enemy.radius <= 0) {
+    //             enemy.alive = false;
+    //         }
+    //     }
+    // }
+
+  }, {
+    key: "getUpgradePrice",
+    value: function getUpgradePrice() {
+      return _get(_getPrototypeOf(Fng.prototype), "getUpgradePrice", this).call(this, 69, 420);
+    }
+  }, {
+    key: "getUpgradeText",
+    value: function getUpgradeText() {
+      return _get(_getPrototypeOf(Fng.prototype), "getUpgradeText", this).call(this, "Dual Wield", "Camo Detection");
+    }
+  }, {
+    key: "upgrade",
+    value: function upgrade() {
+      _get(_getPrototypeOf(Fng.prototype), "upgrade", this).call(this);
+
+      switch (this.rank) {
+        case 2:
+          this.numTargets = 2;
+          break;
+
+        case 3:
+          this.detectCamo = true;
+
+        default:
+          break;
+      }
+    }
+  }]);
+
+  return Fng;
+}(_AbstractTower__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+/***/ }),
+
+/***/ "./src/js/towers/Gunsmith.js":
+/*!***********************************!*\
+  !*** ./src/js/towers/Gunsmith.js ***!
+  \***********************************/
+/*! exports provided: Gunsmith */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Gunsmith", function() { return Gunsmith; });
+/* harmony import */ var _AbstractTower__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractTower */ "./src/js/towers/AbstractTower.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+var Gunsmith = /*#__PURE__*/function (_AbstractTower) {
+  _inherits(Gunsmith, _AbstractTower);
+
+  var _super = _createSuper(Gunsmith);
+
+  function Gunsmith(x, y) {
+    var _this;
+
+    _classCallCheck(this, Gunsmith);
+
+    _this = _super.call(this);
+    _this.x = x;
+    _this.y = y;
+    _this.rangeRadius = 100;
+    _this.numTargets = 5;
+    _this.color = '#228b22';
+    _this.damage = 0.25;
+    _this.price = 150;
+    return _this;
+  }
+
+  _createClass(Gunsmith, [{
+    key: "canHit",
+    value: function canHit(enemy) {
+      return _get(_getPrototypeOf(Gunsmith.prototype), "canHit", this).call(this, enemy) && (!enemy.camo || this.detectCamo);
+    } // hit(enemy) {
+    //     if (enemy.hasArmor) {
+    //         enemy.armorHealth -= this.damage *= this.armorPiercing ? 2 : 0.5;
+    //         enemy.armorWidth = enemy.armorWidth / enemy.baseArmorHealth * enemy.baseArmorWidth;
+    //         if (enemy.armorHealth <= 0) {
+    //             enemy.hasArmor = false;
+    //         }
+    //     } else {
+    //         enemy.health -= this.damage;
+    //         enemy.radius = enemy.health / enemy.baseHealth * enemy.baseRadius;
+    //         if (enemy.radius <= 0) {
+    //             enemy.alive = false;
+    //         }
+    //     }
+    // }
+
+  }, {
+    key: "getUpgradePrice",
+    value: function getUpgradePrice() {
+      return _get(_getPrototypeOf(Gunsmith.prototype), "getUpgradePrice", this).call(this, 690, 4200);
+    }
+  }, {
+    key: "getUpgradeText",
+    value: function getUpgradeText() {
+      return _get(_getPrototypeOf(Gunsmith.prototype), "getUpgradeText", this).call(this, "Scatter Shot", "Armor Piercing Rounds");
+    }
+  }, {
+    key: "upgrade",
+    value: function upgrade() {
+      _get(_getPrototypeOf(Gunsmith.prototype), "upgrade", this).call(this);
+
+      switch (this.rank) {
+        case 2:
+          this.numTargets = 10;
+          break;
+
+        case 3:
+          this.armorPiercing = true;
+
+        default:
+          break;
+      }
+    }
+  }]);
+
+  return Gunsmith;
+}(_AbstractTower__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+/***/ }),
+
+/***/ "./src/js/towers/Marksman.js":
+/*!***********************************!*\
+  !*** ./src/js/towers/Marksman.js ***!
+  \***********************************/
+/*! exports provided: Marksman */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Marksman", function() { return Marksman; });
+/* harmony import */ var _AbstractTower__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractTower */ "./src/js/towers/AbstractTower.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+var Marksman = /*#__PURE__*/function (_AbstractTower) {
+  _inherits(Marksman, _AbstractTower);
+
+  var _super = _createSuper(Marksman);
+
+  function Marksman(x, y) {
+    var _this;
+
+    _classCallCheck(this, Marksman);
+
+    _this = _super.call(this);
+    _this.x = x;
+    _this.y = y;
+    _this.rangeRadius = 200;
+    _this.color = '#00ff00';
+    _this.damage = 0.2;
+    _this.price = 250;
+    return _this;
+  }
+
+  _createClass(Marksman, [{
+    key: "canHit",
+    value: function canHit(enemy) {
+      return _get(_getPrototypeOf(Marksman.prototype), "canHit", this).call(this, enemy) && (!enemy.camo || this.detectCamo);
+    } // hit(enemy) {
+    // if (enemy.hasArmor) {
+    //     enemy.armorHealth -= this.damage *= this.armorPiercing ? 2 : 0.5;
+    //     enemy.armorWidth = enemy.armorWidth / enemy.baseArmorHealth * enemy.baseArmorWidth;
+    //     if (enemy.armorHealth <= 0) {
+    //         enemy.hasArmor = false;
+    //     }
+    // } else {
+    //     enemy.health -= this.damage;
+    //     enemy.radius = enemy.health / enemy.baseHealth * enemy.baseRadius;
+    //     if (enemy.radius <= 0) {
+    //         enemy.alive = false;
+    //     }
+    // }
+    // }
+
+  }, {
+    key: "getUpgradePrice",
+    value: function getUpgradePrice() {
+      return _get(_getPrototypeOf(Marksman.prototype), "getUpgradePrice", this).call(this, 690, 4200);
+    }
+  }, {
+    key: "getUpgradeText",
+    value: function getUpgradeText() {
+      return _get(_getPrototypeOf(Marksman.prototype), "getUpgradeText", this).call(this, "Camo Detection", "Armor Piercing Rounds");
+    }
+  }, {
+    key: "upgrade",
+    value: function upgrade() {
+      _get(_getPrototypeOf(Marksman.prototype), "upgrade", this).call(this);
+
+      switch (this.rank) {
+        case 2:
+          this.detectCamo = true;
+          break;
+
+        case 3:
+          this.armorPiercing = true;
+
+        default:
+          break;
+      }
+    }
+  }]);
+
+  return Marksman;
+}(_AbstractTower__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 /***/ }),
 

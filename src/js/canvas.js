@@ -7,12 +7,19 @@ import {
     healthLbl,
     playBtn,
     mapDropdown,
-    placeBasicTowerBtn, placeSniperTowerBtn, placeSentryTowerBtn, upgradeBtn,
+    placeFngBtn,
+    placeMarksmanBtn,
+    placeGunsmithBtn,
+    upgradeBtn,
+    TowerType
 } from './Constants';
 import { getDistance } from './utils';
 import { createEnemiesForRound, getReward } from './Rounds';
 import { setMap } from "./Maps";
 import { clear, drawPath, drawTowers, drawTowersFull, drawAttack } from "./Draw";
+import {Fng} from "./towers/Fng";
+import {Marksman} from "./towers/Marksman";
+import {Gunsmith} from "./towers/Gunsmith";
 
 // Game Vars
 let round = 1;
@@ -39,9 +46,9 @@ checkAfford(cash);
 drawPath();
 playBtn.addEventListener ("click", run, false);
 mapDropdown.addEventListener ("change", function() { setNewMap() }, false);
-placeBasicTowerBtn.addEventListener ("click", function() { placeTower('BasicTower') }, false);
-placeSniperTowerBtn.addEventListener ("click", function() { placeTower('SniperTower') }, false);
-placeSentryTowerBtn.addEventListener ("click", function() { placeTower('SentryTower') }, false);
+placeFngBtn.addEventListener ("click", function() { placeTower(TowerType.FNG) }, false);
+placeMarksmanBtn.addEventListener ("click", function() { placeTower(TowerType.MARKSMAN) }, false);
+placeGunsmithBtn.addEventListener ("click", function() { placeTower(TowerType.GUNSMITH) }, false);
 upgradeBtn.addEventListener ("click", function() { upgrade() }, false);
 canvas.addEventListener('click', function() {
     if (placing) {
@@ -114,14 +121,16 @@ function moveEnemies() {
 }
 function attack() {
     for (let i = 0; i < towers.length; i++) {
-        console.log(towers[i].numTargets);
         let numTargets = towers[i].numTargets;
         for (let j = 0; j < enemies.length; j++) {
-            if (getDistance(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius &&
-                enemies[i].step >= 0 &&
-                (!enemies[i].camo || (enemies[i].camo && towers[i].detectCamo))) {
+            if (towers[i].canHit(enemies[j])) {
+            // if (getDistance(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius &&
+            //     towers[i].canHit(enemies[j])) {
+                // enemies[i].step >= 0 &&
+                // (!enemies[i].camo || (enemies[i].camo && towers[i].detectCamo))) {
                 drawAttack(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
-                enemies[j].hit(towers[i].damage);
+                // enemies[j].hit(towers[i].damage);
+                towers[i].hit(enemies[i]);
                 numTargets--;
                 if (!enemies[j].alive) {
                     cash += enemies[j].damage;
@@ -142,6 +151,9 @@ function endRound() {
     checkAfford();
     round++;
     playBtn.innerHTML = "Play Round " + round;
+    clear();
+    drawTowers(towers);
+    drawPath();
 }
 
 /*
@@ -149,7 +161,19 @@ Drag and drop tower
  */
 function placeTower(towerType) {
     placing = true;
-    towers[towers.length] = new Tower(towerType, mouse.x, mouse.y);
+    let tower;
+    switch (towerType) {
+        case TowerType.FNG:
+            // towers[towers.length] = new Fng(mouse.x, mouse.y);
+            tower = new Fng(mouse.x, mouse.y);
+            break;
+        case TowerType.MARKSMAN:
+            tower = new Marksman(mouse.x, mouse.y);
+            break;
+        case TowerType.GUNSMITH:
+            tower = new Gunsmith(mouse.x, mouse.y);
+    }
+    towers[towers.length] = tower;
     cash -= towers[towers.length - 1].price;
     cashLbl.innerHTML = "$" + cash;
     checkAfford(cash);
@@ -181,9 +205,9 @@ function setNewMap() {
 }
 
 function checkAfford() {
-    placeBasicTowerBtn.disabled = cash < 100;
-    placeSentryTowerBtn.disabled = cash < 100;
-    placeSniperTowerBtn.disabled = cash < 150;
+    placeFngBtn.disabled = cash < 100;
+    placeMarksmanBtn.disabled = cash < 100;
+    placeGunsmithBtn.disabled = cash < 150;
 }
 
 function upgrade() {
@@ -192,9 +216,7 @@ function upgrade() {
 }
 
 function checkUpgrade() {
-    if (cash >= selectedTower.getUpgradePrice()) {
-        upgradeBtn.disabled = false;
-        upgradeBtn.innerText = selectedTower.getUpgradeText();
-    }
+    upgradeBtn.innerText = selectedTower.getUpgradeText() + ' ($' + selectedTower.getUpgradePrice() + ')';
+    upgradeBtn.disabled = selectedTower.rank >= 3 || cash <= selectedTower.getUpgradePrice();
 }
 
