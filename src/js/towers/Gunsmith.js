@@ -9,7 +9,7 @@ export class Gunsmith extends AbstractTower {
         this.numTargets = 5;
         this.color = '#228b22';
         this.damage = 0.25;
-        this.price = 150;
+        this.price = 100;
     }
 
     canHit(enemy) {
@@ -17,7 +17,7 @@ export class Gunsmith extends AbstractTower {
     }
 
     getUpgradePrice() {
-        return super.getUpgradePrice(690, 4200);
+        return super.getUpgradePrice(100, 100);
     }
 
     getUpgradeText() {

@@ -18770,17 +18770,28 @@ function createEnemiesForRound(round) {
 
   switch (round) {
     case 1:
-      // Start red circle immediately at default speed with armor and camo
-      // enemies[0] = new Enemy('circle', 'red', 0, 1, 1, true);
-      // Start yellow square with delay at default speed without camo or armor
-      // enemies[1] = new Enemy('square', 'yellow', -150, 1, 0, false);
-      // Start yellow square with delay at 2x speed with armor and camo
-      // enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
       for (var i = 0; i < 5; i++) {
         enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', i * -75, 1, 0, false);
       }
 
       break;
+
+    case 2:
+      for (var _i = 0; _i < 10; _i++) {
+        enemies[_i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'yellow', _i * -150, 3, 0, false);
+      }
+
+      break;
+
+    case 3:
+      for (var _i2 = 0; _i2 < 10; _i2++) {
+        enemies[_i2] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'yellow', _i2 * -50, 1, 0, false);
+      }
+
+      break;
+
+    case 4:
+      enemies[0] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'red', 0, 1, 5, true);
 
     default:
       break;
@@ -18790,7 +18801,12 @@ function createEnemiesForRound(round) {
 }
 function getReward(round) {
   return 50;
-}
+} // Start red circle immediately at default speed with armor and camo
+// enemies[0] = new Enemy('circle', 'red', 0, 1, 1, true);
+// Start yellow square with delay at default speed without camo or armor
+// enemies[1] = new Enemy('square', 'yellow', -150, 1, 0, false);
+// Start yellow square with delay at 2x speed with armor and camo
+// enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
 
 /***/ }),
 
@@ -18829,15 +18845,15 @@ __webpack_require__.r(__webpack_exports__);
 var round = 1;
 var cash = 150;
 var health = 100;
-var devMode = true;
+var devMode = false;
 
 if (devMode) {
   cash = 1000000;
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerHTML = "$" + cash;
   health = 100000;
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["healthLbl"].innerHTML = "Health: " + health;
 }
 
+_Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerHTML = "Cash: $" + cash;
+_Constants__WEBPACK_IMPORTED_MODULE_0__["healthLbl"].innerHTML = "Health: " + health;
 var selectedTower;
 var towers = [];
 var enemies = [];
@@ -18868,6 +18884,8 @@ _Constants__WEBPACK_IMPORTED_MODULE_0__["upgradeBtn"].addEventListener("click", 
   upgrade();
 }, false);
 _Constants__WEBPACK_IMPORTED_MODULE_0__["canvas"].addEventListener('click', function () {
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["upgradeBtn"].innerText = "Select a tower to upgrade";
+
   if (placing) {
     placing = false;
   } else {
@@ -18890,9 +18908,12 @@ document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape' && placing) {
     placing = false;
     cash += towers[towers.length - 1].price;
+    _Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerText = "Cash: " + cash;
+    checkAfford();
     towers.pop();
     Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawTowers"])(towers);
     Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawPath"])();
+    _Constants__WEBPACK_IMPORTED_MODULE_0__["upgradeBtn"].innerText = "Select a tower to upgrade";
   }
 }, false);
 /*
@@ -18949,12 +18970,7 @@ function attack() {
 
     for (var j = 0; j < enemies.length; j++) {
       if (towers[i].canHit(enemies[j])) {
-        // if (getDistance(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius &&
-        //     towers[i].canHit(enemies[j])) {
-        // enemies[i].step >= 0 &&
-        // (!enemies[i].camo || (enemies[i].camo && towers[i].detectCamo))) {
-        Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawAttack"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y); // enemies[j].hit(towers[i].damage);
-
+        Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawAttack"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
         towers[i].hit(enemies[i]);
         numTargets--;
 
@@ -18975,9 +18991,14 @@ function attack() {
 function endRound() {
   running = false;
   cash += Object(_Rounds__WEBPACK_IMPORTED_MODULE_2__["getReward"])(round);
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerHTML = "$" + cash;
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerHTML = "Cash: $" + cash;
   checkAfford();
   round++;
+
+  if (round >= 5) {
+    alert("Your Winner!!");
+  }
+
   _Constants__WEBPACK_IMPORTED_MODULE_0__["playBtn"].innerHTML = "Play Round " + round;
   Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["clear"])();
   Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawTowers"])(towers);
@@ -18994,7 +19015,6 @@ function placeTower(towerType) {
 
   switch (towerType) {
     case _Constants__WEBPACK_IMPORTED_MODULE_0__["TowerType"].FNG:
-      // towers[towers.length] = new Fng(mouse.x, mouse.y);
       tower = new _towers_Fng__WEBPACK_IMPORTED_MODULE_5__["Fng"](_Constants__WEBPACK_IMPORTED_MODULE_0__["mouse"].x, _Constants__WEBPACK_IMPORTED_MODULE_0__["mouse"].y);
       break;
 
@@ -19008,7 +19028,7 @@ function placeTower(towerType) {
 
   towers[towers.length] = tower;
   cash -= towers[towers.length - 1].price;
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerHTML = "$" + cash;
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerHTML = "Cash: $" + cash;
   checkAfford(cash);
   place();
 }
@@ -19044,7 +19064,7 @@ function setNewMap() {
 function checkAfford() {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["placeFngBtn"].disabled = cash < 100;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["placeMarksmanBtn"].disabled = cash < 100;
-  _Constants__WEBPACK_IMPORTED_MODULE_0__["placeGunsmithBtn"].disabled = cash < 150;
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["placeGunsmithBtn"].disabled = cash < 100;
 }
 
 function upgrade() {
@@ -19375,7 +19395,7 @@ var Fng = /*#__PURE__*/function (_AbstractTower) {
   }, {
     key: "getUpgradePrice",
     value: function getUpgradePrice() {
-      return _get(_getPrototypeOf(Fng.prototype), "getUpgradePrice", this).call(this, 69, 420);
+      return _get(_getPrototypeOf(Fng.prototype), "getUpgradePrice", this).call(this, 100, 100);
     }
   }, {
     key: "getUpgradeText",
@@ -19461,7 +19481,7 @@ var Gunsmith = /*#__PURE__*/function (_AbstractTower) {
     _this.numTargets = 5;
     _this.color = '#228b22';
     _this.damage = 0.25;
-    _this.price = 150;
+    _this.price = 100;
     return _this;
   }
 
@@ -19473,7 +19493,7 @@ var Gunsmith = /*#__PURE__*/function (_AbstractTower) {
   }, {
     key: "getUpgradePrice",
     value: function getUpgradePrice() {
-      return _get(_getPrototypeOf(Gunsmith.prototype), "getUpgradePrice", this).call(this, 690, 4200);
+      return _get(_getPrototypeOf(Gunsmith.prototype), "getUpgradePrice", this).call(this, 100, 100);
     }
   }, {
     key: "getUpgradeText",
@@ -19555,10 +19575,10 @@ var Marksman = /*#__PURE__*/function (_AbstractTower) {
     _this = _super.call(this);
     _this.x = x;
     _this.y = y;
-    _this.rangeRadius = 200;
+    _this.rangeRadius = 250;
     _this.color = '#00ff00';
     _this.damage = 0.2;
-    _this.price = 250;
+    _this.price = 100;
     return _this;
   }
 
@@ -19570,7 +19590,7 @@ var Marksman = /*#__PURE__*/function (_AbstractTower) {
   }, {
     key: "getUpgradePrice",
     value: function getUpgradePrice() {
-      return _get(_getPrototypeOf(Marksman.prototype), "getUpgradePrice", this).call(this, 690, 4200);
+      return _get(_getPrototypeOf(Marksman.prototype), "getUpgradePrice", this).call(this, 100, 100);
     }
   }, {
     key: "getUpgradeText",

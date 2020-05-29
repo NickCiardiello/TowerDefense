@@ -26,13 +26,13 @@ import 'bootstrap/dist/css/bootstrap.css';
 let round = 1;
 let cash = 150;
 let health = 100;
-let devMode = true;
+let devMode = false;
 if (devMode) {
     cash = 1000000;
-    cashLbl.innerHTML = "$" + cash;
     health = 100000;
-    healthLbl.innerHTML = "Health: " + health;
 }
+cashLbl.innerHTML = "Cash: $" + cash;
+healthLbl.innerHTML = "Health: " + health;
 let selectedTower;
 let towers = [];
 let enemies = [];
@@ -53,6 +53,7 @@ placeMarksmanBtn.addEventListener ("click", function() { placeTower(TowerType.MA
 placeGunsmithBtn.addEventListener ("click", function() { placeTower(TowerType.GUNSMITH) }, false);
 upgradeBtn.addEventListener ("click", function() { upgrade() }, false);
 canvas.addEventListener('click', function() {
+    upgradeBtn.innerText = "Select a tower to upgrade";
     if (placing) {
         placing = false;
     } else {
@@ -68,15 +69,17 @@ canvas.addEventListener('click', function() {
             drawTowers(towers);
             drawPath();
         }
-
     }}, false);
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape' && placing) {
         placing = false;
         cash += towers[towers.length - 1].price;
+        cashLbl.innerText = "Cash: " + cash;
+        checkAfford();
         towers.pop();
         drawTowers(towers);
         drawPath();
+        upgradeBtn.innerText = "Select a tower to upgrade";
     }
 }, false);
 
@@ -126,12 +129,7 @@ function attack() {
         let numTargets = towers[i].numTargets;
         for (let j = 0; j < enemies.length; j++) {
             if (towers[i].canHit(enemies[j])) {
-            // if (getDistance(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y) < towers[i].rangeRadius &&
-            //     towers[i].canHit(enemies[j])) {
-                // enemies[i].step >= 0 &&
-                // (!enemies[i].camo || (enemies[i].camo && towers[i].detectCamo))) {
                 drawAttack(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
-                // enemies[j].hit(towers[i].damage);
                 towers[i].hit(enemies[i]);
                 numTargets--;
                 if (!enemies[j].alive) {
@@ -149,9 +147,12 @@ function attack() {
 function endRound() {
     running = false;
     cash += getReward(round);
-    cashLbl.innerHTML = "$" + cash;
+    cashLbl.innerHTML = "Cash: $" + cash;
     checkAfford();
     round++;
+    if (round >= 5) {
+        alert("Your Winner!!");
+    }
     playBtn.innerHTML = "Play Round " + round;
     clear();
     drawTowers(towers);
@@ -166,7 +167,6 @@ function placeTower(towerType) {
     let tower;
     switch (towerType) {
         case TowerType.FNG:
-            // towers[towers.length] = new Fng(mouse.x, mouse.y);
             tower = new Fng(mouse.x, mouse.y);
             break;
         case TowerType.MARKSMAN:
@@ -209,7 +209,7 @@ function setNewMap() {
 function checkAfford() {
     placeFngBtn.disabled = cash < 100;
     placeMarksmanBtn.disabled = cash < 100;
-    placeGunsmithBtn.disabled = cash < 150;
+    placeGunsmithBtn.disabled = cash < 100;
 }
 
 function upgrade() {

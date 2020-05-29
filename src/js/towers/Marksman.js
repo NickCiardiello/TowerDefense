@@ -5,10 +5,10 @@ export class Marksman extends AbstractTower {
         super();
         this.x = x;
         this.y = y;
-        this.rangeRadius = 200;
+        this.rangeRadius = 250;
         this.color = '#00ff00';
         this.damage = 0.2;
-        this.price = 250;
+        this.price = 100;
     }
 
     canHit(enemy) {
@@ -16,7 +16,7 @@ export class Marksman extends AbstractTower {
     }
 
     getUpgradePrice() {
-        return super.getUpgradePrice(690, 4200);
+        return super.getUpgradePrice(100, 100);
     }
 
     getUpgradeText() {
