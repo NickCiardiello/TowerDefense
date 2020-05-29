@@ -3,6 +3,8 @@ import {getMap} from "./Maps";
 
 export function clear() {
     context.clearRect(0, 0, canvas.width, canvas.height);
+    // context.fillStyle = '#ff0';
+    // context.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 export function drawCircle(x, y, radius, color) {

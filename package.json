@@ -15,7 +15,8 @@
     "bootstrap": "^4.5.0",
     "jquery": "^3.5.1",
     "path2d-polyfill": "^0.4.2",
-    "popper.js": "^1.16.1"
+    "popper.js": "^1.16.1",
+    "postcss-flexbox": "^1.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

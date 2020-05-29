@@ -1,4 +1,3 @@
-import Tower from './towers/Tower';
 import {
     canvas,
     mouse,
@@ -20,6 +19,8 @@ import { clear, drawPath, drawTowers, drawTowersFull, drawAttack } from "./Draw"
 import {Fng} from "./towers/Fng";
 import {Marksman} from "./towers/Marksman";
 import {Gunsmith} from "./towers/Gunsmith";
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
 
 // Game Vars
 let round = 1;
@@ -41,6 +42,7 @@ let running = false;
 /*
 Init
  */
+clear();
 setMap('');
 checkAfford(cash);
 drawPath();
@@ -175,7 +177,7 @@ function placeTower(towerType) {
     }
     towers[towers.length] = tower;
     cash -= towers[towers.length - 1].price;
-    cashLbl.innerHTML = "$" + cash;
+    cashLbl.innerHTML = "Cash: $" + cash;
     checkAfford(cash);
     place();
 }

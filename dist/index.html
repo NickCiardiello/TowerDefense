@@ -6,6 +6,7 @@
     <style>
         body {
             margin: 0;
+            background-color: azure;
         }
         .center {
             margin: auto;
@@ -22,26 +23,61 @@
         p {
             text-align: center;
         }
+        .navbar-center {
+            position: absolute;
+            left: 50%;
+            transform: translatex(-50%);
+        }
+        button {
+            padding: 10px 10px 10px 10px;
+        }
     </style>
 <link rel="icon" href="favicon.ico"></head>
 <body>
-<canvas></canvas>
-<div class="center">
-    <button id="playBtn" type="button" class="btn btn-primary">Play Round 1</button>
-    <select id="mapDropdown">
-        <option value="1" selected="selected">sinMap</option>
-        <option value="2">sMap</option>
-        <option value="3">backwardsCMap</option>
-    </select>
-    <button id="placeFngBtn" class="btn btn-primary">Place FNG ($100)</button>
-    <button id="placeMarksmanBtn" class="btn btn-primary">Place Marksman ($150)</button>
-    <button id="placeGunsmithBtn" class="btn btn-primary">Place Gunsmith ($100)</button>
-    <button id="upgradeBtn" class="btn btn-primary" disabled>Select a tower to upgrade</button>
+<!--<canvas></canvas>-->
+<nav class="navbar navbar-light bg-light">
+    <span class="navbar-brand mb-0 h1">Tower Defense</span>
+    <h3 class="navbar-center">Defend the Enemy Attack!!</h3>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col align-items-end">
+            <button id="playBtn" type="button" class="btn btn-success btn-block">Play Round 1</button>
+            <select id="mapDropdown">
+                <option value="1" selected="selected">sinMap</option>
+                <option value="2">sMap</option>
+                <option value="3">backwardsCMap</option>
+            </select>
+            <span id="cashLbl" class="label label-default">Cash: $</span>
+            <span id="healthLbl" class="label label-primary">Health:</span>
+        </div>
+        <div class="col-md-auto align-items-center">
+            <canvas></canvas>
+        </div>
+        <div class="col align-items-start">
+            <button id="placeFngBtn" class="btn btn-primary btn-lg btn-block">Place FNG ($100)</button>
+            <button id="placeMarksmanBtn" class="btn btn-primary btn-lg btn-block">Place Marksman ($150)</button>
+            <button id="placeGunsmithBtn" class="btn btn-primary btn-lg btn-block">Place Gunsmith ($100)</button>
+            <button id="upgradeBtn" class="btn btn-secondary btn-lg btn-block" disabled>Select a tower to upgrade</button>
+        </div>
+    </div>
 </div>
-<div>
-    <p id="cashLbl">$150</p>
-    <p id="healthLbl">Health: 100</p>
-</div>
+<!--<div class="center">-->
+<!--    <button id="playBtn" type="button" class="btn btn-primary">Play Round 1</button>-->
+<!--    <select id="mapDropdown">-->
+<!--        <option value="1" selected="selected">sinMap</option>-->
+<!--        <option value="2">sMap</option>-->
+<!--        <option value="3">backwardsCMap</option>-->
+<!--    </select>-->
+<!--    <button id="placeFngBtn" class="btn btn-primary">Place FNG ($100)</button>-->
+<!--    <button id="placeMarksmanBtn" class="btn btn-primary">Place Marksman ($150)</button>-->
+<!--    <button id="placeGunsmithBtn" class="btn btn-primary">Place Gunsmith ($100)</button>-->
+<!--    <button id="upgradeBtn" class="btn btn-primary" disabled>Select a tower to upgrade</button>-->
+<!--</div>-->
+<!--<div>-->
+<!--    <p id="cashLbl">$</p>-->
+<!--    <p id="healthLbl">Health:</p>-->
+<!--</div>-->
 <div>
 
 </div>
