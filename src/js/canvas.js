@@ -26,7 +26,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 let round = 1;
 let cash = 150;
 let health = 100;
-let devMode = false;
+let devMode = true;
 if (devMode) {
     cash = 1000000;
     health = 100000;
@@ -214,6 +214,9 @@ function checkAfford() {
 
 function upgrade() {
     selectedTower.upgrade();
+    clear();
+    drawTowers(towers);
+    drawPath();
     checkUpgrade();
 }
 

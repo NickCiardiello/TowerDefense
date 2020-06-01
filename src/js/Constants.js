@@ -14,8 +14,7 @@ export const mouse = {
 }
 addEventListener('mousemove', (event) => {
     mouse.x = event.clientX - rect.left;
-    // mouse.y = event.clientY;
-    mouse.y = event.clientY - rect.top / 2;
+    mouse.y = event.clientY - rect.top;
 })
 
 // Elements
@@ -34,3 +33,8 @@ export const TowerType = {
     MARKSMAN: 'Marksman',
     GUNSMITH: 'Gunsmith'
 };
+
+export const EnemyType = {
+    CIRCLE: 'Circle',
+    SQUARE: 'Square'
+}

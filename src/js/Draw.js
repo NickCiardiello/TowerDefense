@@ -1,4 +1,4 @@
-import {canvas, context} from "./Constants";
+import {canvas, context, EnemyType} from "./Constants";
 import {getMap} from "./Maps";
 
 export function clear() {
@@ -51,7 +51,7 @@ export function drawSquareBorder(x, y, radius, color, width) {
 
 export function drawEnemy(enemy) {
     if (enemy.step >= 0) {
-        if (enemy.shape === 'circle') {
+        if (enemy.shape === EnemyType.CIRCLE) {
             drawCircle(enemy.x, enemy.y, enemy.radius, enemy.color);
             if (enemy.camo) {
                 drawCircleBorder(enemy.x, enemy.y, enemy.radius + 10, "lightgreen", 2);
@@ -59,7 +59,7 @@ export function drawEnemy(enemy) {
             if (enemy.hasArmor) {
                 drawCircleBorder(enemy.x, enemy.y, enemy.radius, 'black', enemy.armorWidth);
             }
-        } else if (enemy.shape === 'square') {
+        } else if (enemy.shape === EnemyType.SQUARE) {
             drawSquare(enemy.x, enemy.y, enemy.radius, enemy.color);
             if (enemy.camo) {
                 drawSquareBorder(enemy.x, enemy.y, enemy.radius + 10, "lightgreen", 2);
@@ -83,8 +83,10 @@ export function drawTower(tower) {
 export function drawTowerRange(tower) {
     context.beginPath()
     context.arc(tower.x, tower.y, tower.rangeRadius, 0, Math.PI * 2, false)
+    context.globalAlpha = 0.5;
     context.fillStyle = '#d3d3d3';
     context.fill()
+    context.globalAlpha = 1;
     context.closePath()
 }
 
@@ -128,5 +130,14 @@ export function drawAttack(towerX, towerY, enemyX, enemyY) {
     context.moveTo(towerX, towerY);
     context.lineTo(enemyX, enemyY);
     context.stroke();
+    context.closePath();
+}
+
+export function drawText(text, x, y) {
+    context.beginPath();
+    context.fillStyle = "black";
+    context.textAlign = "center";
+    context.font = "15px Arial";
+    context.fillText(text, x, y + 7);
     context.closePath();
 }

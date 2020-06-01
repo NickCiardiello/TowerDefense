@@ -18497,7 +18497,7 @@ module.exports = g;
 /*!*****************************!*\
   !*** ./src/js/Constants.js ***!
   \*****************************/
-/*! exports provided: canvas, context, mouse, pathElement, playBtn, mapDropdown, placeFngBtn, placeMarksmanBtn, placeGunsmithBtn, upgradeBtn, cashLbl, healthLbl, TowerType */
+/*! exports provided: canvas, context, mouse, pathElement, playBtn, mapDropdown, placeFngBtn, placeMarksmanBtn, placeGunsmithBtn, upgradeBtn, cashLbl, healthLbl, TowerType, EnemyType */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18515,6 +18515,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cashLbl", function() { return cashLbl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "healthLbl", function() { return healthLbl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TowerType", function() { return TowerType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EnemyType", function() { return EnemyType; });
 /* harmony import */ var _towers_Fng__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./towers/Fng */ "./src/js/towers/Fng.js");
 // Canvas + Context
 
@@ -18529,9 +18530,8 @@ var mouse = {
   y: 0
 };
 addEventListener('mousemove', function (event) {
-  mouse.x = event.clientX - rect.left; // mouse.y = event.clientY;
-
-  mouse.y = event.clientY - rect.top / 2;
+  mouse.x = event.clientX - rect.left;
+  mouse.y = event.clientY - rect.top;
 }); // Elements
 
 var pathElement = document.createElementNS('http://www.w3.org/2000/svg', "path");
@@ -18548,6 +18548,10 @@ var TowerType = {
   MARKSMAN: 'Marksman',
   GUNSMITH: 'Gunsmith'
 };
+var EnemyType = {
+  CIRCLE: 'Circle',
+  SQUARE: 'Square'
+};
 
 /***/ }),
 
@@ -18555,7 +18559,7 @@ var TowerType = {
 /*!************************!*\
   !*** ./src/js/Draw.js ***!
   \************************/
-/*! exports provided: clear, drawCircle, drawCircleBorder, drawSquare, drawSquareBorder, drawEnemy, drawTower, drawTowerRange, drawTowerFull, drawPath, drawTowers, drawTowersFull, drawAttack */
+/*! exports provided: clear, drawCircle, drawCircleBorder, drawSquare, drawSquareBorder, drawEnemy, drawTower, drawTowerRange, drawTowerFull, drawPath, drawTowers, drawTowersFull, drawAttack, drawText */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18573,6 +18577,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawTowers", function() { return drawTowers; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawTowersFull", function() { return drawTowersFull; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawAttack", function() { return drawAttack; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawText", function() { return drawText; });
 /* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Constants */ "./src/js/Constants.js");
 /* harmony import */ var _Maps__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Maps */ "./src/js/Maps.js");
 
@@ -18629,7 +18634,7 @@ function drawSquareBorder(x, y, radius, color, width) {
 }
 function drawEnemy(enemy) {
   if (enemy.step >= 0) {
-    if (enemy.shape === 'circle') {
+    if (enemy.shape === _Constants__WEBPACK_IMPORTED_MODULE_0__["EnemyType"].CIRCLE) {
       drawCircle(enemy.x, enemy.y, enemy.radius, enemy.color);
 
       if (enemy.camo) {
@@ -18639,7 +18644,7 @@ function drawEnemy(enemy) {
       if (enemy.hasArmor) {
         drawCircleBorder(enemy.x, enemy.y, enemy.radius, 'black', enemy.armorWidth);
       }
-    } else if (enemy.shape === 'square') {
+    } else if (enemy.shape === _Constants__WEBPACK_IMPORTED_MODULE_0__["EnemyType"].SQUARE) {
       drawSquare(enemy.x, enemy.y, enemy.radius, enemy.color);
 
       if (enemy.camo) {
@@ -18662,8 +18667,10 @@ function drawTower(tower) {
 function drawTowerRange(tower) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].arc(tower.x, tower.y, tower.rangeRadius, 0, Math.PI * 2, false);
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].globalAlpha = 0.5;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fillStyle = '#d3d3d3';
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fill();
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].globalAlpha = 1;
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].closePath();
 }
 function drawTowerFull(tower) {
@@ -18704,6 +18711,14 @@ function drawAttack(towerX, towerY, enemyX, enemyY) {
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].moveTo(towerX, towerY);
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].lineTo(enemyX, enemyY);
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].stroke();
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].closePath();
+}
+function drawText(text, x, y) {
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].beginPath();
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fillStyle = "black";
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].textAlign = "center";
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].font = "15px Arial";
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].fillText(text, x, y + 7);
   _Constants__WEBPACK_IMPORTED_MODULE_0__["context"].closePath();
 }
 
@@ -18764,34 +18779,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createEnemiesForRound", function() { return createEnemiesForRound; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getReward", function() { return getReward; });
 /* harmony import */ var _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enemies/Enemy */ "./src/js/enemies/Enemy.js");
+/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Constants */ "./src/js/Constants.js");
+
 
 function createEnemiesForRound(round) {
   var enemies = [];
 
   switch (round) {
     case 1:
-      for (var i = 0; i < 5; i++) {
-        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'red', i * -75, 1, 0, false);
+      // for (let i = 0; i < 5; i++) {
+      //     enemies[i] = new Enemy('circle', 'red', i * -75, 1, 0, false);
+      // }
+      for (var i = 0; i < 15; i++) {
+        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](_Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE, 1, i * -65, 0, false);
       }
 
       break;
-
-    case 2:
-      for (var _i = 0; _i < 10; _i++) {
-        enemies[_i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'yellow', _i * -150, 3, 0, false);
-      }
-
-      break;
-
-    case 3:
-      for (var _i2 = 0; _i2 < 10; _i2++) {
-        enemies[_i2] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('circle', 'yellow', _i2 * -50, 1, 0, false);
-      }
-
-      break;
-
-    case 4:
-      enemies[0] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]('square', 'red', 0, 1, 5, true);
+    // case 2:
+    //     for (let i = 0; i < 10; i++) {
+    //         enemies[i] = new Enemy('square', 'yellow', i * -150, 3, 0, false);
+    //     }
+    //     break;
+    // case 3:
+    //     for (let i = 0; i < 10; i++) {
+    //         enemies[i] = new Enemy('circle', 'yellow', i * -50, 1, 0, false);
+    //     }
+    //     break;
+    // case 4:
+    //     enemies[0] = new Enemy('square', 'red', 0, 1, 5, true);
 
     default:
       break;
@@ -18845,7 +18860,7 @@ __webpack_require__.r(__webpack_exports__);
 var round = 1;
 var cash = 150;
 var health = 100;
-var devMode = false;
+var devMode = true;
 
 if (devMode) {
   cash = 1000000;
@@ -19069,6 +19084,9 @@ function checkAfford() {
 
 function upgrade() {
   selectedTower.upgrade();
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["clear"])();
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawTowers"])(towers);
+  Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawPath"])();
   checkUpgrade();
 }
 
@@ -19090,16 +19108,18 @@ function checkUpgrade() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Enemy; });
 /* harmony import */ var _Draw__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Draw */ "./src/js/Draw.js");
+/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Constants */ "./src/js/Constants.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
- // Shape is health, color is base speed
+
+ // Shape is health and base speed, speedMultiplier which determines color
 
 var Enemy = /*#__PURE__*/function () {
-  function Enemy(shape, color, step, speedMultiplier, armorMultiplier, camo) {
+  function Enemy(shape, speedMultiplier, step, armorMultiplier, camo) {
     _classCallCheck(this, Enemy);
 
     this.shape = shape;
@@ -19121,12 +19141,12 @@ var Enemy = /*#__PURE__*/function () {
     this.radius = 20;
 
     switch (shape) {
-      case "circle":
+      case _Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE:
         this.baseHealth = 20;
         this.baseSpeed = 3;
         break;
 
-      case "square":
+      case _Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].SQUARE:
         this.baseHealth = 60;
         this.baseSpeed = 1;
         break;
@@ -19137,16 +19157,15 @@ var Enemy = /*#__PURE__*/function () {
     }
 
     this.health = this.baseHealth;
+    this.speed = this.baseSpeed * this.speedMultiplier;
 
-    switch (color) {
-      case "red":
+    switch (speedMultiplier) {
+      case 1:
         this.color = 'red';
-        this.speed = this.baseSpeed * this.speedMultiplier;
         break;
 
-      case "yellow":
+      case 5:
         this.color = 'yellow';
-        this.speed = this.baseSpeed * this.speedMultiplier;
         break;
 
       default:
@@ -19251,6 +19270,8 @@ var AbstractTower = /*#__PURE__*/function () {
     key: "drawTower",
     value: function drawTower() {
       Object(_Draw__WEBPACK_IMPORTED_MODULE_0__["drawTower"])(this);
+
+      Object(_Draw__WEBPACK_IMPORTED_MODULE_0__["drawText"])(this.rank, this.x, this.y);
     }
   }, {
     key: "drawTowerRange",

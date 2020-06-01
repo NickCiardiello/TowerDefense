@@ -1,8 +1,9 @@
 import {drawEnemy} from "../Draw";
+import {EnemyType} from "../Constants";
 
-// Shape is health, color is base speed
+// Shape is health and base speed, speedMultiplier which determines color
 export default class Enemy {
-    constructor(shape, color, step, speedMultiplier, armorMultiplier, camo) {
+    constructor(shape, speedMultiplier, step, armorMultiplier, camo) {
         this.shape = shape;
         this.step = step;
         this.baseSpeed = 0;
@@ -21,11 +22,11 @@ export default class Enemy {
         this.baseRadius = 20;
         this.radius = 20;
         switch (shape) {
-            case "circle":
+            case EnemyType.CIRCLE:
                 this.baseHealth = 20;
                 this.baseSpeed = 3;
                 break;
-            case "square":
+            case EnemyType.SQUARE:
                 this.baseHealth = 60;
                 this.baseSpeed = 1
                 break;
@@ -34,14 +35,13 @@ export default class Enemy {
                 break;
         }
         this.health = this.baseHealth;
-        switch (color) {
-            case "red":
+        this.speed = this.baseSpeed * this.speedMultiplier;
+        switch (speedMultiplier) {
+            case 1:
                 this.color = 'red';
-                this.speed = this.baseSpeed * this.speedMultiplier;
                 break;
-            case "yellow":
+            case 5:
                 this.color = 'yellow';
-                this.speed = this.baseSpeed * this.speedMultiplier;
                 break;
             default:
                 this.color = 'black';

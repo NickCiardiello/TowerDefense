@@ -1,4 +1,4 @@
-import { drawTower, drawTowerRange } from "../Draw";
+import {drawText, drawTower, drawTowerRange} from "../Draw";
 import {getDistance} from "../utils";
 
 export default class AbstractTower {
@@ -16,6 +16,7 @@ export default class AbstractTower {
 
     drawTower() {
         drawTower(this);
+        drawText(this.rank, this.x, this.y);
     }
 
     drawTowerRange() {
