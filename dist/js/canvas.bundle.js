@@ -18791,8 +18791,11 @@ function createEnemiesForRound(round) {
       //     enemies[i] = new Enemy('circle', 'red', i * -75, 1, 0, false);
       // }
       for (var i = 0; i < 15; i++) {
-        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](_Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE, 1, i * -65, 0, false);
-      }
+        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](_Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE, 2, i * -65, 0, false);
+      } // for (let i = 5; i < 10; i++) {
+      //     enemies[i] = new Enemy(EnemyType.CIRCLE, 2, i * -50, 0, false);
+      // }
+
 
       break;
     // case 2:
@@ -18970,35 +18973,45 @@ function moveEnemies() {
       if (health <= 0) {
         alert('Game Over');
       }
-    } // Sort enemies in descending order by how far along they are on the map
+    } // Sort enemies by how far along they are on the map, furthest along is 0
 
 
     enemies.sort(function (a, b) {
       return b.step - a.step;
     });
   }
+
+  if (devMode) {
+    for (var _i = 0; _i < enemies.length; _i++) {
+      Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawText"])(_i, enemies[_i].x, enemies[_i].y - 7);
+    }
+  }
 }
 
 function attack() {
   for (var i = 0; i < towers.length; i++) {
     var numTargets = towers[i].numTargets;
+    var j = 0;
 
-    for (var j = 0; j < enemies.length; j++) {
+    while (numTargets > 0 && j < enemies.length) {
+      // for (let j = 0; j < enemies.length; j++) {
       if (towers[i].canHit(enemies[j])) {
         Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawAttack"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
-        towers[i].hit(enemies[i]);
+        towers[i].hit(enemies[j]);
         numTargets--;
 
         if (!enemies[j].alive) {
           cash += enemies[j].damage;
           _Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerHTML = "$" + cash;
           enemies.splice(j, 1);
-        }
+          j--;
+        } // if (numTargets === 0) {
+        //     break;
+        // }
 
-        if (numTargets === 0) {
-          break;
-        }
       }
+
+      j++;
     }
   }
 }
@@ -19143,7 +19156,7 @@ var Enemy = /*#__PURE__*/function () {
     switch (shape) {
       case _Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE:
         this.baseHealth = 20;
-        this.baseSpeed = 3;
+        this.baseSpeed = 2;
         break;
 
       case _Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].SQUARE:
@@ -19164,7 +19177,7 @@ var Enemy = /*#__PURE__*/function () {
         this.color = 'red';
         break;
 
-      case 5:
+      case 2:
         this.color = 'yellow';
         break;
 
@@ -19187,26 +19200,22 @@ var Enemy = /*#__PURE__*/function () {
       this.x = x;
       this.y = y;
       this.step += this.speed;
-    }
-  }, {
-    key: "hit",
-    value: function hit(damageTaken) {
-      if (this.hasArmor) {
-        this.armorHealth -= damageTaken;
-        this.armorWidth = this.armorHealth / this.baseArmorHealth * this.baseArmorWidth;
+    } // hit(damageTaken) {
+    //     if (this.hasArmor) {
+    //         this.armorHealth -= damageTaken;
+    //         this.armorWidth = this.armorHealth / this.baseArmorHealth * this.baseArmorWidth;
+    //         if (this.armorHealth <= 0) {
+    //             this.hasArmor = false;
+    //         }
+    //     } else {
+    //         this.health -= damageTaken;
+    //         this.radius = this.health / this.baseHealth * this.baseRadius;
+    //         if (this.radius <= 0) {
+    //             this.alive = false;
+    //         }
+    //     }
+    // }
 
-        if (this.armorHealth <= 0) {
-          this.hasArmor = false;
-        }
-      } else {
-        this.health -= damageTaken;
-        this.radius = this.health / this.baseHealth * this.baseRadius;
-
-        if (this.radius <= 0) {
-          this.alive = false;
-        }
-      }
-    }
   }]);
 
   return Enemy;
@@ -19301,10 +19310,11 @@ var AbstractTower = /*#__PURE__*/function () {
         }
       } else {
         enemy.health -= this.damage;
-        enemy.radius = enemy.health / enemy.baseHealth * enemy.baseRadius;
 
-        if (enemy.radius <= 0) {
+        if (enemy.health <= 0) {
           enemy.alive = false;
+        } else {
+          enemy.radius = enemy.health / enemy.baseHealth * enemy.baseRadius;
         }
       }
     }

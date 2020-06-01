@@ -29,7 +29,7 @@ export default class AbstractTower {
     }
 
     canHit(enemy) {
-        return getDistance(this.x, this.y, enemy.x, enemy.y) < this.rangeRadius && enemy.step >= 0;
+        return getDistance(this.x, this.y, enemy.x, enemy.y) < this.rangeRadius && enemy.step >= 0
     }
 
     hit(enemy) {
@@ -41,9 +41,10 @@ export default class AbstractTower {
             }
         } else {
             enemy.health -= this.damage;
-            enemy.radius = enemy.health / enemy.baseHealth * enemy.baseRadius;
-            if (enemy.radius <= 0) {
+            if (enemy.health <= 0) {
                 enemy.alive = false;
+            } else {
+                enemy.radius = enemy.health / enemy.baseHealth * enemy.baseRadius;
             }
         }
     }

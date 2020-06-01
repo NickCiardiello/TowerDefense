@@ -24,7 +24,7 @@ export default class Enemy {
         switch (shape) {
             case EnemyType.CIRCLE:
                 this.baseHealth = 20;
-                this.baseSpeed = 3;
+                this.baseSpeed = 2;
                 break;
             case EnemyType.SQUARE:
                 this.baseHealth = 60;
@@ -40,7 +40,7 @@ export default class Enemy {
             case 1:
                 this.color = 'red';
                 break;
-            case 5:
+            case 2:
                 this.color = 'yellow';
                 break;
             default:
@@ -62,20 +62,20 @@ export default class Enemy {
     }
 
 
-    hit(damageTaken) {
-        if (this.hasArmor) {
-            this.armorHealth -= damageTaken;
-            this.armorWidth = this.armorHealth / this.baseArmorHealth * this.baseArmorWidth;
-            if (this.armorHealth <= 0) {
-                this.hasArmor = false;
-            }
-        } else {
-            this.health -= damageTaken;
-            this.radius = this.health / this.baseHealth * this.baseRadius;
-            if (this.radius <= 0) {
-                this.alive = false;
-            }
-        }
-    }
+    // hit(damageTaken) {
+    //     if (this.hasArmor) {
+    //         this.armorHealth -= damageTaken;
+    //         this.armorWidth = this.armorHealth / this.baseArmorHealth * this.baseArmorWidth;
+    //         if (this.armorHealth <= 0) {
+    //             this.hasArmor = false;
+    //         }
+    //     } else {
+    //         this.health -= damageTaken;
+    //         this.radius = this.health / this.baseHealth * this.baseRadius;
+    //         if (this.radius <= 0) {
+    //             this.alive = false;
+    //         }
+    //     }
+    // }
 }
 

@@ -9,8 +9,11 @@ export function createEnemiesForRound(round) {
             //     enemies[i] = new Enemy('circle', 'red', i * -75, 1, 0, false);
             // }
             for (let i = 0; i < 15; i++) {
-                enemies[i] = new Enemy(EnemyType.CIRCLE, 1, i * -65, 0, false);
+                enemies[i] = new Enemy(EnemyType.CIRCLE, 2, i * -65, 0, false);
             }
+            // for (let i = 5; i < 10; i++) {
+            //     enemies[i] = new Enemy(EnemyType.CIRCLE, 2, i * -50, 0, false);
+            // }
             break;
         // case 2:
         //     for (let i = 0; i < 10; i++) {

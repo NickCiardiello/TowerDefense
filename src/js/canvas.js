@@ -15,7 +15,7 @@ import {
 import { getDistance } from './utils';
 import { createEnemiesForRound, getReward } from './Rounds';
 import { setMap } from "./Maps";
-import { clear, drawPath, drawTowers, drawTowersFull, drawAttack } from "./Draw";
+import {clear, drawPath, drawTowers, drawTowersFull, drawAttack, drawText} from "./Draw";
 import {Fng} from "./towers/Fng";
 import {Marksman} from "./towers/Marksman";
 import {Gunsmith} from "./towers/Gunsmith";
@@ -120,27 +120,32 @@ function moveEnemies() {
             }
         }
 
-        // Sort enemies in descending order by how far along they are on the map
+        // Sort enemies by how far along they are on the map, furthest along is 0
         enemies.sort((a, b) => (b.step - a.step));
+    }
+    if (devMode) {
+        for (let i = 0; i < enemies.length; i++) {
+            drawText(i, enemies[i].x, enemies[i].y - 7);
+        }
     }
 }
 function attack() {
     for (let i = 0; i < towers.length; i++) {
         let numTargets = towers[i].numTargets;
-        for (let j = 0; j < enemies.length; j++) {
+        let j = 0;
+        while (numTargets > 0 && j < enemies.length) {
             if (towers[i].canHit(enemies[j])) {
                 drawAttack(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
-                towers[i].hit(enemies[i]);
+                towers[i].hit(enemies[j]);
                 numTargets--;
                 if (!enemies[j].alive) {
                     cash += enemies[j].damage;
                     cashLbl.innerHTML = "$" + cash;
                     enemies.splice(j, 1);
-                }
-                if (numTargets === 0) {
-                    break;
+                    j--;
                 }
             }
+            j++
         }
     }
 }
