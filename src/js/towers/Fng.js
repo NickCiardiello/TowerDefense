@@ -16,7 +16,7 @@ export class Fng extends AbstractTower {
     }
 
     getUpgradePrice() {
-        return super.getUpgradePrice(100, 100);
+        return super.getUpgradePrice(75, 150);
     }
 
     getUpgradeText() {

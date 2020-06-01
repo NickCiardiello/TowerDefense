@@ -18787,29 +18787,24 @@ function createEnemiesForRound(round) {
 
   switch (round) {
     case 1:
-      // for (let i = 0; i < 5; i++) {
-      //     enemies[i] = new Enemy('circle', 'red', i * -75, 1, 0, false);
-      // }
       for (var i = 0; i < 15; i++) {
-        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](_Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE, 2, i * -65, 0, false);
-      } // for (let i = 5; i < 10; i++) {
-      //     enemies[i] = new Enemy(EnemyType.CIRCLE, 2, i * -50, 0, false);
-      // }
-
+        enemies[i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](_Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE, 1, i * -65, 0, false);
+      }
 
       break;
-    // case 2:
-    //     for (let i = 0; i < 10; i++) {
-    //         enemies[i] = new Enemy('square', 'yellow', i * -150, 3, 0, false);
-    //     }
-    //     break;
-    // case 3:
-    //     for (let i = 0; i < 10; i++) {
-    //         enemies[i] = new Enemy('circle', 'yellow', i * -50, 1, 0, false);
-    //     }
-    //     break;
-    // case 4:
-    //     enemies[0] = new Enemy('square', 'red', 0, 1, 5, true);
+
+    case 2:
+      for (var _i = 0; _i < 5; _i++) {
+        enemies[_i] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](_Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE, 1, _i * -30, 0, false);
+      }
+
+      for (var _i2 = 5; _i2 < 10; _i2++) {
+        enemies[_i2] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](_Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE, 1, -650 - _i2 * -30, 0, false);
+      }
+
+      for (var _i3 = 10; _i3 < 13; _i3++) {
+        enemies[_i3] = new _enemies_Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](_Constants__WEBPACK_IMPORTED_MODULE_1__["EnemyType"].CIRCLE, 2, _i3 * -150, 0, false);
+      }
 
     default:
       break;
@@ -18819,12 +18814,7 @@ function createEnemiesForRound(round) {
 }
 function getReward(round) {
   return 50;
-} // Start red circle immediately at default speed with armor and camo
-// enemies[0] = new Enemy('circle', 'red', 0, 1, 1, true);
-// Start yellow square with delay at default speed without camo or armor
-// enemies[1] = new Enemy('square', 'yellow', -150, 1, 0, false);
-// Start yellow square with delay at 2x speed with armor and camo
-// enemies[2] = new Enemy('square', 'yellow', -300, 2, 2, true);
+}
 
 /***/ }),
 
@@ -18863,7 +18853,7 @@ __webpack_require__.r(__webpack_exports__);
 var round = 1;
 var cash = 150;
 var health = 100;
-var devMode = true;
+var devMode = false;
 
 if (devMode) {
   cash = 1000000;
@@ -18994,7 +18984,6 @@ function attack() {
     var j = 0;
 
     while (numTargets > 0 && j < enemies.length) {
-      // for (let j = 0; j < enemies.length; j++) {
       if (towers[i].canHit(enemies[j])) {
         Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawAttack"])(towers[i].x, towers[i].y, enemies[j].x, enemies[j].y);
         towers[i].hit(enemies[j]);
@@ -19005,10 +18994,7 @@ function attack() {
           _Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerHTML = "$" + cash;
           enemies.splice(j, 1);
           j--;
-        } // if (numTargets === 0) {
-        //     break;
-        // }
-
+        }
       }
 
       j++;
@@ -19096,6 +19082,8 @@ function checkAfford() {
 }
 
 function upgrade() {
+  cash -= selectedTower.getUpgradePrice();
+  _Constants__WEBPACK_IMPORTED_MODULE_0__["cashLbl"].innerHTML = "Cash: $" + cash;
   selectedTower.upgrade();
   Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["clear"])();
   Object(_Draw__WEBPACK_IMPORTED_MODULE_4__["drawTowers"])(towers);
@@ -19426,7 +19414,7 @@ var Fng = /*#__PURE__*/function (_AbstractTower) {
   }, {
     key: "getUpgradePrice",
     value: function getUpgradePrice() {
-      return _get(_getPrototypeOf(Fng.prototype), "getUpgradePrice", this).call(this, 100, 100);
+      return _get(_getPrototypeOf(Fng.prototype), "getUpgradePrice", this).call(this, 75, 150);
     }
   }, {
     key: "getUpgradeText",
